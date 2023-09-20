@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Kalkulator</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				background-color: #f2f2f2;
+				text-align: center;
+			}
+			.container {
+				background-color: #fff;
+				border-radius: 10px;
+				box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+				padding: 20px;
+				margin: 20px auto;
+				max-width: 80%;
+			}
+			h1 {
+				color: #333;
+			}
+			label {
+				display: block;
+				margin-bottom: 10px;
+			}
+			input[type="number"] {
+				width: 100%;
+				padding: 10px;
+				margin-bottom: 10px;
+				border: 1px solid #ccc;
+				border-radius: 5px;
+			}
+			button {
+				background-color: #4caf50;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: #45a049;
+			}
+			p {
+				font-weight: bold;
+				margin-top: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Kalkulator</h1>
+			<label for="dostawy">Dostawy:</label>
+			<input type="number" id="dostawy" required /><br />
+
+			<label for="sala">Sala:</label>
+			<input type="number" id="sala" required /><br />
+
+			<label for="bolt">Bolt:</label>
+			<input type="number" id="bolt" required /><br />
+
+			<label for="wolt">Wolt (opcjonalnie):</label>
+			<input type="number" id="wolt" /><br />
+
+			<label for="start">Start:</label>
+			<input type="number" id="start" required /><br />
+
+			<label for="online">Online:</label>
+			<input type="number" id="online" required /><br />
+
+			<label for="karta_raz">Karta raz:</label>
+			<input type="number" id="karta_raz" required /><br />
+
+			<label for="karta_drugie">Karta drugie (opcjonalnie):</label>
+			<input type="number" id="karta_drugie" /><br />
+
+			<label for="karta_trzecie">Karta trzecie (opcjonalnie):</label>
+			<input type="number" id="karta_trzecie" /><br />
+
+			<h2>Wydatki (opcjonalne)</h2>
+			<label for="wyplata1">Wyplata 1:</label>
+			<input type="number" id="wyplata1" class="wyplaty" /><br />
+
+			<label for="wyplata2">Wyplata 2:</label>
+			<input type="number" id="wyplata2" class="wyplaty" /><br />
+
+			<label for="wyplata3">Wyplata 3:</label>
+			<input type="number" id="wyplata3" class="wyplaty" /><br />
+
+			<label for="wyplata4">Wyplata 4:</label>
+			<input type="number" id="wyplata4" class="wyplaty" /><br />
+
+			<label for="wyplata5">Wyplata 5:</label>
+			<input type="number" id="wyplata5" class="wyplaty" /><br />
+
+			<label for="wyplata6">Wyplata 6:</label>
+			<input type="number" id="wyplata6" class="wyplaty" /><br />
+
+			<label for="wyplata7">Wyplata 7:</label>
+			<input type="number" id="wyplata7" class="wyplaty" /><br />
+
+			<label for="wyplata8">Wyplata 8:</label>
+			<input type="number" id="wyplata8" class="wyplaty" /><br />
+
+			<button onclick="oblicz()">Oblicz</button>
+
+			<h2>Wynik</h2>
+			<p>Wynik z podanego rozliczenia: <span id="wynik_rozliczenia">0</span></p>
+		</div>
+
+		<script>
+			function oblicz() {
+				const dostawy = parseFloat(document.getElementById("dostawy").value);
+				const sala = parseFloat(document.getElementById("sala").value);
+				const bolt = parseFloat(document.getElementById("bolt").value);
+				const wolt = parseFloat(document.getElementById("wolt").value) || 0;
+				const start = parseFloat(document.getElementById("start").value);
+				const online = parseFloat(document.getElementById("online").value);
+				const karta_raz = parseFloat(
+					document.getElementById("karta_raz").value
+				);
+				const karta_drugie =
+					parseFloat(document.getElementById("karta_drugie").value) || 0;
+				const karta_trzecie =
+					parseFloat(document.getElementById("karta_trzecie").value) || 0;
+
+				const wyplatyInputs = document.getElementsByClassName("wyplaty");
+				let wydatki = 0;
+
+				for (let i = 0; i < wyplatyInputs.length; i++) {
+					const wyplata = parseFloat(wyplatyInputs[i].value) || 0;
+					wydatki += wyplata;
+				}
+
+				const wynik_rozliczenia =
+					dostawy +
+					sala +
+					bolt +
+					wolt -
+					start -
+					online -
+					karta_raz -
+					karta_drugie -
+					karta_trzecie -
+					wydatki;
+
+				document.getElementById("wynik_rozliczenia").textContent =
+					wynik_rozliczenia;
+			}
+		</script>
+	</body>
+</html>
