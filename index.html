@@ -54,20 +54,17 @@
 			<label for="dostawy">Dostawy:</label>
 			<input type="number" id="dostawy" required /><br />
 
-			<label for="sala">Sala:</label>
-			<input type="number" id="sala" required /><br />
-
 			<label for="bolt">Bolt:</label>
 			<input type="number" id="bolt" required /><br />
 
 			<label for="wolt">Wolt (opcjonalnie):</label>
 			<input type="number" id="wolt" /><br />
 
+			<label for="sala">Sala:</label>
+			<input type="number" id="sala" required /><br />
+
 			<label for="start">Start:</label>
 			<input type="number" id="start" required /><br />
-
-			<label for="online">Online:</label>
-			<input type="number" id="online" required /><br />
 
 			<label for="karta_raz">Karta raz:</label>
 			<input type="number" id="karta_raz" required /><br />
@@ -77,6 +74,9 @@
 
 			<label for="karta_trzecie">Karta trzecie (opcjonalnie):</label>
 			<input type="number" id="karta_trzecie" /><br />
+
+			<label for="online">Online:</label>
+			<input type="number" id="online" required /><br />
 
 			<h2>Wydatki (opcjonalne)</h2>
 			<label for="wyplata1">Wyplata 1:</label>
@@ -106,17 +106,19 @@
 			<button onclick="oblicz()">Oblicz</button>
 
 			<h2>Wynik</h2>
-			<p>Wynik z podanego rozliczenia: <span id="wynik_rozliczenia">0</span></p>
+			<p>Utarg: <span id="utarg">0</span></p>
+			<p>Wynik rozliczenia: <span id="wynik_obliczen">0</span></p>
+			<p>Online: <span id="online_wynik">0</span></p>
+			<p>KO Karty i Online: <span id="ko_karty_online">0</span></p>
 		</div>
 
 		<script>
 			function oblicz() {
 				const dostawy = parseFloat(document.getElementById("dostawy").value);
-				const sala = parseFloat(document.getElementById("sala").value);
 				const bolt = parseFloat(document.getElementById("bolt").value);
 				const wolt = parseFloat(document.getElementById("wolt").value) || 0;
+				const sala = parseFloat(document.getElementById("sala").value);
 				const start = parseFloat(document.getElementById("start").value);
-				const online = parseFloat(document.getElementById("online").value);
 				const karta_raz = parseFloat(
 					document.getElementById("karta_raz").value
 				);
@@ -124,6 +126,7 @@
 					parseFloat(document.getElementById("karta_drugie").value) || 0;
 				const karta_trzecie =
 					parseFloat(document.getElementById("karta_trzecie").value) || 0;
+				const online = parseFloat(document.getElementById("online").value);
 
 				const wyplatyInputs = document.getElementsByClassName("wyplaty");
 				let wydatki = 0;
@@ -133,20 +136,25 @@
 					wydatki += wyplata;
 				}
 
-				const wynik_rozliczenia =
+				const utarg = dostawy + sala + bolt + wolt;
+				const wynik_obliczen =
 					dostawy +
 					sala +
-					bolt +
-					wolt -
 					start -
 					online -
 					karta_raz -
 					karta_drugie -
 					karta_trzecie -
 					wydatki;
+				const online_wynik = online + bolt + wolt;
+				const ko_karty_online =
+					karta_raz + karta_drugie + karta_trzecie + online_wynik;
 
-				document.getElementById("wynik_rozliczenia").textContent =
-					wynik_rozliczenia;
+				document.getElementById("utarg").textContent = utarg;
+				document.getElementById("wynik_obliczen").textContent = wynik_obliczen;
+				document.getElementById("online_wynik").textContent = online_wynik;
+				document.getElementById("ko_karty_online").textContent =
+					ko_karty_online;
 			}
 		</script>
 	</body>
