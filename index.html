@@ -46,6 +46,28 @@
 				font-weight: bold;
 				margin-top: 10px;
 			}
+			.karta-container {
+				display: none;
+			}
+			.buzki {
+				display: flex;
+				justify-content: flex-end;
+				align-items: center;
+				margin-top: 20px;
+			}
+			.buzek {
+				font-size: 24px;
+				margin-left: 10px;
+			}
+			.buzek img {
+				width: 40px;
+				height: 40px;
+			}
+			.komentarz {
+				font-weight: normal;
+				font-size: 18px;
+				margin-top: 10px;
+			}
 		</style>
 	</head>
 	<body>
@@ -67,52 +89,102 @@
 			<input type="number" id="start" required /><br />
 
 			<label for="karta_raz">Karta raz:</label>
-			<input type="number" id="karta_raz" required /><br />
+			<input
+				type="number"
+				id="karta_raz"
+				required
+				oninput="pokazKarty()" /><br />
 
-			<label for="karta_drugie">Karta drugie (opcjonalnie):</label>
-			<input type="number" id="karta_drugie" /><br />
+			<div class="karta-container" id="karta_drugie_container">
+				<label for="karta_drugie">Karta drugie (opcjonalnie):</label>
+				<input type="number" id="karta_drugie" /><br />
+			</div>
 
-			<label for="karta_trzecie">Karta trzecie (opcjonalnie):</label>
-			<input type="number" id="karta_trzecie" /><br />
+			<div class="karta-container" id="karta_trzecie_container">
+				<label for="karta_trzecie">Karta trzecie (opcjonalnie):</label>
+				<input type="number" id="karta_trzecie" /><br />
+			</div>
 
 			<label for="online">Online:</label>
 			<input type="number" id="online" required /><br />
 
 			<h2>Wydatki (opcjonalne)</h2>
-			<label for="wyplata1">Wyplata 1:</label>
-			<input type="number" id="wyplata1" class="wyplaty" /><br />
+			<div id="wydatki-container">
+				<label for="wyplata1">Wyplata 1:</label>
+				<input type="number" id="wyplata1" class="wyplaty" /><br />
+			</div>
 
-			<label for="wyplata2">Wyplata 2:</label>
-			<input type="number" id="wyplata2" class="wyplaty" /><br />
-
-			<label for="wyplata3">Wyplata 3:</label>
-			<input type="number" id="wyplata3" class="wyplaty" /><br />
-
-			<label for="wyplata4">Wyplata 4:</label>
-			<input type="number" id="wyplata4" class="wyplaty" /><br />
-
-			<label for="wyplata5">Wyplata 5:</label>
-			<input type="number" id="wyplata5" class="wyplaty" /><br />
-
-			<label for="wyplata6">Wyplata 6:</label>
-			<input type="number" id="wyplata6" class="wyplaty" /><br />
-
-			<label for="wyplata7">Wyplata 7:</label>
-			<input type="number" id="wyplata7" class="wyplaty" /><br />
-
-			<label for="wyplata8">Wyplata 8:</label>
-			<input type="number" id="wyplata8" class="wyplaty" /><br />
-
+			<button onclick="dodajWydatek()">Dodaj kolejny wydatek</button>
 			<button onclick="oblicz()">Oblicz</button>
 
 			<h2>Wynik</h2>
 			<p>Utarg: <span id="utarg">0</span></p>
-			<p>Wynik rozliczenia: <span id="wynik_obliczen">0</span></p>
+			<p>Koniec: <span id="wynik_obliczen">0</span></p>
 			<p>Online: <span id="online_wynik">0</span></p>
 			<p>KO Karty i Online: <span id="ko_karty_online">0</span></p>
+			<p>Wydatki: <span id="wydatki">0</span></p>
+
+			<div class="buzki" id="buzkiContainer">
+				<span class="buzek">
+					<img
+						src="https://via.placeholder.com/40/FF0000/FFFFFF?text=:-("
+						alt="Smutek"
+						id="buzekSad" />
+				</span>
+				<span class="buzek">
+					<img
+						src="https://via.placeholder.com/40/FFFF00/000000?text=:|"
+						alt="Neutralny"
+						id="buzekNeutral" />
+				</span>
+				<span class="buzek">
+					<img
+						src="https://via.placeholder.com/40/00FF00/000000?text=:-)"
+						alt="Uśmiech"
+						id="buzekHappy" />
+				</span>
+			</div>
+			<p class="komentarz" id="komentarzTekst">Nieźle, ale może być lepiej!</p>
 		</div>
 
 		<script>
+			let wydatkiCounter = 1;
+
+			function dodajWydatek() {
+				wydatkiCounter++;
+				const wydatkiContainer = document.getElementById("wydatki-container");
+				const newInput = document.createElement("div");
+				newInput.innerHTML = `<label for="wyplata${wydatkiCounter}">Wyplata ${wydatkiCounter}:</label>
+                                  <input type="number" id="wyplata${wydatkiCounter}" class="wyplaty" /><br>`;
+				wydatkiContainer.appendChild(newInput);
+			}
+
+			function pokazKarty() {
+				const kartaRazValue = parseFloat(
+					document.getElementById("karta_raz").value
+				);
+				const kartaDrugieContainer = document.getElementById(
+					"karta_drugie_container"
+				);
+				const kartaTrzecieContainer = document.getElementById(
+					"karta_trzecie_container"
+				);
+
+				if (kartaRazValue >= 1) {
+					kartaDrugieContainer.style.display = "block";
+				} else {
+					kartaDrugieContainer.style.display = "none";
+				}
+
+				if (kartaRazValue >= 2) {
+					kartaTrzecieContainer.style.display = "block";
+				} else {
+					kartaTrzecieContainer.style.display = "none";
+				}
+			}
+
+			let counter = 0;
+
 			function oblicz() {
 				const dostawy = parseFloat(document.getElementById("dostawy").value);
 				const bolt = parseFloat(document.getElementById("bolt").value);
@@ -122,10 +194,6 @@
 				const karta_raz = parseFloat(
 					document.getElementById("karta_raz").value
 				);
-				const karta_drugie =
-					parseFloat(document.getElementById("karta_drugie").value) || 0;
-				const karta_trzecie =
-					parseFloat(document.getElementById("karta_trzecie").value) || 0;
 				const online = parseFloat(document.getElementById("online").value);
 
 				const wyplatyInputs = document.getElementsByClassName("wyplaty");
@@ -136,7 +204,15 @@
 					wydatki += wyplata;
 				}
 
+				const karta_drugie =
+					parseFloat(document.getElementById("karta_drugie").value) || 0;
+				const karta_trzecie =
+					parseFloat(document.getElementById("karta_trzecie").value) || 0;
+
 				const utarg = dostawy + sala + bolt + wolt;
+				const online_wynik = online + bolt + wolt;
+				const ko_karty_online =
+					karta_raz + karta_drugie + karta_trzecie + online_wynik;
 				const wynik_obliczen =
 					dostawy +
 					sala +
@@ -146,15 +222,51 @@
 					karta_drugie -
 					karta_trzecie -
 					wydatki;
-				const online_wynik = online + bolt + wolt;
-				const ko_karty_online =
-					karta_raz + karta_drugie + karta_trzecie + online_wynik;
 
 				document.getElementById("utarg").textContent = utarg;
 				document.getElementById("wynik_obliczen").textContent = wynik_obliczen;
 				document.getElementById("online_wynik").textContent = online_wynik;
 				document.getElementById("ko_karty_online").textContent =
 					ko_karty_online;
+				document.getElementById("wydatki").textContent = wydatki;
+
+				const roznica = utarg - 5000;
+
+				const buzekSad = document.getElementById("buzekSad");
+				const buzekNeutral = document.getElementById("buzekNeutral");
+				const buzekHappy = document.getElementById("buzekHappy");
+
+				buzekSad.src = "https://via.placeholder.com/40/FF0000/FFFFFF?text=:-(";
+				buzekNeutral.src =
+					"https://via.placeholder.com/40/FFFF00/000000?text=:|";
+				buzekHappy.src =
+					"https://via.placeholder.com/40/00FF00/000000?text=:-)";
+
+				const komentarzTekst = document.getElementById("komentarzTekst");
+
+				if (counter >= 2000 && counter <= 10000) {
+					if (roznica === 5000) {
+						buzekHappy.src =
+							"https://via.placeholder.com/40/00FF00/000000?text=:-)";
+						komentarzTekst.textContent =
+							"Świetnie, masz dokładnie 5000 nadwyżki!";
+					} else if (roznica % 500 === 0) {
+						buzekNeutral.src =
+							"https://via.placeholder.com/40/FFFF00/000000?text=:|";
+						komentarzTekst.textContent =
+							"Oho, to trochę zabawne, masz " + roznica + " nadwyżki!";
+					}
+				} else if (counter > 10000) {
+					buzekHappy.src =
+						"https://via.placeholder.com/40/00FF00/000000?text=:-)";
+					komentarzTekst.textContent = "Gratulacje, masz ponad 10000 nadwyżki!";
+				} else {
+					buzekSad.src =
+						"https://via.placeholder.com/40/FF0000/FFFFFF?text=:-(";
+					komentarzTekst.textContent = "Nieźle, ale może być lepiej!";
+				}
+
+				counter++;
 			}
 		</script>
 	</body>
