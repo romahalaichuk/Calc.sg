@@ -6,9 +6,13 @@
 		<style>
 			body {
 				font-family: Arial, sans-serif;
-				background-image: url(0d41b2f6b468e66c6b2d8d6ef6b9f3fd--outline-art-outline-drawings.jpg);
 				text-align: center;
+				background: linear-gradient(to bottom, #ffe6e6, transparent),
+					url(0d41b2f6b468e66c6b2d8d6ef6b9f3fd--outline-art-outline-drawings.jpg);
+				margin: 0;
+				padding: 0;
 			}
+
 			.container {
 				background-color: #ffffff65;
 				border-radius: 10px;
@@ -16,14 +20,23 @@
 				padding: 20px;
 				margin: 20px auto;
 				max-width: 80%;
+				display: flex;
+				flex-direction: column;
+				align-items: center; /* Wyśrodkowanie wertykalne */
+				justify-content: center; /* Wyśrodkowanie poziome */
+				min-height: 100vh; /* Minimalna wysokość kontenera, aby wyśrodkować wertykalnie */
 			}
+
 			h1 {
 				color: #333;
 			}
+
 			label {
+				font-size: 18px;
 				display: block;
 				margin-bottom: 10px;
 			}
+
 			input[type="number"] {
 				width: 100%;
 				padding: 10px;
@@ -31,6 +44,7 @@
 				border: 1px solid #ccc;
 				border-radius: 5px;
 			}
+
 			button {
 				background-color: #4caf50;
 				color: white;
@@ -38,31 +52,24 @@
 				padding: 10px 20px;
 				border-radius: 5px;
 				cursor: pointer;
+				margin-top: 20px; /* Dodatkowy odstęp między przyciskami */
 			}
+
 			button:hover {
 				background-color: #45a049;
 			}
+
 			p {
+				font-size: 20px;
+				background-color: #ffc0cb;
 				font-weight: bold;
 				margin-top: 10px;
 			}
+
 			.karta-container {
 				display: none;
 			}
-			.buzki {
-				display: flex;
-				justify-content: flex-end;
-				align-items: center;
-				margin-top: 20px;
-			}
-			.buzek {
-				font-size: 24px;
-				margin-left: 10px;
-			}
-			.buzek img {
-				width: 40px;
-				height: 40px;
-			}
+
 			.komentarz {
 				font-weight: normal;
 				font-size: 18px;
@@ -123,27 +130,9 @@
 			<p>Online: <span id="online_wynik">0</span></p>
 			<p>KO Karty i Online: <span id="ko_karty_online">0</span></p>
 			<p>Wydatki: <span id="wydatki">0</span></p>
+			<p>Dostawy: <span id="wynik_dostawy">0</span></p>
+			<p>Ser miłości zużyj: <span id="ser_milosci_zuzyj">0</span></p>
 
-			<div class="buzki" id="buzkiContainer">
-				<span class="buzek">
-					<img
-						src="https://via.placeholder.com/40/FF0000/FFFFFF?text=:-("
-						alt="Smutek"
-						id="buzekSad" />
-				</span>
-				<span class="buzek">
-					<img
-						src="https://via.placeholder.com/40/FFFF00/000000?text=:|"
-						alt="Neutralny"
-						id="buzekNeutral" />
-				</span>
-				<span class="buzek">
-					<img
-						src="https://via.placeholder.com/40/00FF00/000000?text=:-)"
-						alt="Uśmiech"
-						id="buzekHappy" />
-				</span>
-			</div>
 			<p class="komentarz" id="komentarzTekst">Nieźle, ale może być lepiej!</p>
 		</div>
 
@@ -223,12 +212,18 @@
 					karta_trzecie -
 					wydatki;
 
+				const wynik_dostawy = dostawy - utarg * 0.5; // Dostawy zależne od utargu
+				const ser_milosci_zuzyj = utarg >= 1000 ? 1 : utarg >= 500 ? 0.5 : 0; // Ser miłości zużyć
+
 				document.getElementById("utarg").textContent = utarg;
 				document.getElementById("wynik_obliczen").textContent = wynik_obliczen;
 				document.getElementById("online_wynik").textContent = online_wynik;
 				document.getElementById("ko_karty_online").textContent =
 					ko_karty_online;
 				document.getElementById("wydatki").textContent = wydatki;
+				document.getElementById("wynik_dostawy").textContent = wynik_dostawy;
+				document.getElementById("ser_milosci_zuzyj").textContent =
+					ser_milosci_zuzyj;
 
 				const roznica = utarg - 5000;
 
