@@ -114,6 +114,14 @@
 			<label for="online">Online:</label>
 			<input type="number" id="online" required /><br />
 
+			<label for="wczoraj_zostalo_sera">Wczoraj zostało sera:</label>
+			<input type="number" id="wczoraj_zostalo_sera" /><br />
+
+			<!-- Dodaj ten element wyniku "Wczoraj zostało sera" -->
+			<p>
+				Wczoraj zostało sera: <span id="wczoraj_zostalo_sera_wynik">0.00</span>
+			</p>
+
 			<h2>Wydatki (opcjonalne)</h2>
 			<div id="wydatki-container">
 				<label for="wyplata1">Wyplata 1:</label>
@@ -124,12 +132,13 @@
 			<button onclick="oblicz()">Oblicz</button>
 
 			<h2>Wynik</h2>
-			<p>Koniec: <span id="wynik_obliczen">0</span></p>
-			<p>Online: <span id="online_wynik">0</span></p>
-			<p>KO Karty i Online: <span id="ko_karty_online">0</span></p>
-			<p>Wydatki: <span id="wydatki">0</span></p>
-			<p>Dostawy: <span id="wynik_dostawy">0</span></p>
-			<p>Ser miłości zużyj: <span id="ser_milosci_zuzyj">0</span></p>
+			<p>Utarg: <span id="utarg">0.00</span></p>
+			<p>Online: <span id="online_wynik">0.00</span></p>
+			<p>KO Karty i Online: <span id="ko_karty_online">0.00</span></p>
+			<p>Wydatki: <span id="wydatki">0.00</span></p>
+			<p>Dostawy: <span id="wynik_dostawy">0.00</span></p>
+			<p>Ser miłości zużyj: <span id="ser_milosci_zuzyj">0.00</span></p>
+			<p>Sera miało zostać: <span id="sera_mialo_zostac">0.00</span></p>
 
 			<p class="komentarz" id="komentarzTekst">Nieźle, ale może być lepiej!</p>
 		</div>
@@ -211,14 +220,25 @@
 				const wynik_dostawy = dostawy + bolt + wolt;
 				const ser_milosci_zuzyj = Math.floor(utarg / 500) * 0.5;
 
-				document.getElementById("wynik_obliczen").textContent = wynik_obliczen;
-				document.getElementById("online_wynik").textContent = online_wynik;
+				const wczoraj_zostalo_sera =
+					parseFloat(document.getElementById("wczoraj_zostalo_sera").value) ||
+					0;
+				const sera_mialo_zostac = wczoraj_zostalo_sera - ser_milosci_zuzyj;
+
+				document.getElementById("utarg").textContent = utarg.toFixed(2);
+				document.getElementById("online_wynik").textContent =
+					online_wynik.toFixed(2);
 				document.getElementById("ko_karty_online").textContent =
-					ko_karty_online;
-				document.getElementById("wydatki").textContent = wydatki;
-				document.getElementById("wynik_dostawy").textContent = wynik_dostawy;
+					ko_karty_online.toFixed(2);
+				document.getElementById("wydatki").textContent = wydatki.toFixed(2);
+				document.getElementById("wynik_dostawy").textContent =
+					wynik_dostawy.toFixed(2);
 				document.getElementById("ser_milosci_zuzyj").textContent =
 					ser_milosci_zuzyj.toFixed(2);
+				document.getElementById("wczoraj_zostalo_sera_wynik").textContent =
+					wczoraj_zostalo_sera.toFixed(2);
+				document.getElementById("sera_mialo_zostac").textContent =
+					sera_mialo_zostac.toFixed(2);
 			}
 		</script>
 	</body>
