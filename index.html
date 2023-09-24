@@ -7,8 +7,7 @@
 			body {
 				font-family: Arial, sans-serif;
 				text-align: center;
-				background: linear-gradient(to bottom, #ffe6e6, transparent),
-					url(0d41b2f6b468e66c6b2d8d6ef6b9f3fd--outline-art-outline-drawings.jpg);
+				background: linear-gradient(to bottom, #ffe6e6, transparent);
 				margin: 0;
 				padding: 0;
 			}
@@ -22,9 +21,9 @@
 				max-width: 80%;
 				display: flex;
 				flex-direction: column;
-				align-items: center; /* Wyśrodkowanie wertykalne */
-				justify-content: center; /* Wyśrodkowanie poziome */
-				min-height: 100vh; /* Minimalna wysokość kontenera, aby wyśrodkować wertykalnie */
+				align-items: center;
+				justify-content: center;
+				min-height: 100vh;
 			}
 
 			h1 {
@@ -52,7 +51,7 @@
 				padding: 10px 20px;
 				border-radius: 5px;
 				cursor: pointer;
-				margin-top: 20px; /* Dodatkowy odstęp między przyciskami */
+				margin-top: 20px;
 			}
 
 			button:hover {
@@ -125,7 +124,6 @@
 			<button onclick="oblicz()">Oblicz</button>
 
 			<h2>Wynik</h2>
-			<p>Utarg: <span id="utarg">0</span></p>
 			<p>Koniec: <span id="wynik_obliczen">0</span></p>
 			<p>Online: <span id="online_wynik">0</span></p>
 			<p>KO Karty i Online: <span id="ko_karty_online">0</span></p>
@@ -144,7 +142,7 @@
 				const wydatkiContainer = document.getElementById("wydatki-container");
 				const newInput = document.createElement("div");
 				newInput.innerHTML = `<label for="wyplata${wydatkiCounter}">Wyplata ${wydatkiCounter}:</label>
-                                  <input type="number" id="wyplata${wydatkiCounter}" class="wyplaty" /><br>`;
+                              <input type="number" id="wyplata${wydatkiCounter}" class="wyplaty" /><br>`;
 				wydatkiContainer.appendChild(newInput);
 			}
 
@@ -171,8 +169,6 @@
 					kartaTrzecieContainer.style.display = "none";
 				}
 			}
-
-			let counter = 0;
 
 			function oblicz() {
 				const dostawy = parseFloat(document.getElementById("dostawy").value);
@@ -212,10 +208,9 @@
 					karta_trzecie -
 					wydatki;
 
-				const wynik_dostawy = dostawy - utarg * 0.5; // Dostawy zależne od utargu
-				const ser_milosci_zuzyj = utarg >= 1000 ? 1 : utarg >= 500 ? 0.5 : 0; // Ser miłości zużyć
+				const wynik_dostawy = dostawy + bolt + wolt;
+				const ser_milosci_zuzyj = Math.floor(utarg / 500) * 0.5;
 
-				document.getElementById("utarg").textContent = utarg;
 				document.getElementById("wynik_obliczen").textContent = wynik_obliczen;
 				document.getElementById("online_wynik").textContent = online_wynik;
 				document.getElementById("ko_karty_online").textContent =
@@ -223,45 +218,7 @@
 				document.getElementById("wydatki").textContent = wydatki;
 				document.getElementById("wynik_dostawy").textContent = wynik_dostawy;
 				document.getElementById("ser_milosci_zuzyj").textContent =
-					ser_milosci_zuzyj;
-
-				const roznica = utarg - 5000;
-
-				const buzekSad = document.getElementById("buzekSad");
-				const buzekNeutral = document.getElementById("buzekNeutral");
-				const buzekHappy = document.getElementById("buzekHappy");
-
-				buzekSad.src = "https://via.placeholder.com/40/FF0000/FFFFFF?text=:-(";
-				buzekNeutral.src =
-					"https://via.placeholder.com/40/FFFF00/000000?text=:|";
-				buzekHappy.src =
-					"https://via.placeholder.com/40/00FF00/000000?text=:-)";
-
-				const komentarzTekst = document.getElementById("komentarzTekst");
-
-				if (counter >= 2000 && counter <= 10000) {
-					if (roznica === 5000) {
-						buzekHappy.src =
-							"https://via.placeholder.com/40/00FF00/000000?text=:-)";
-						komentarzTekst.textContent =
-							"Świetnie, masz dokładnie 5000 nadwyżki!";
-					} else if (roznica % 500 === 0) {
-						buzekNeutral.src =
-							"https://via.placeholder.com/40/FFFF00/000000?text=:|";
-						komentarzTekst.textContent =
-							"Oho, to trochę zabawne, masz " + roznica + " nadwyżki!";
-					}
-				} else if (counter > 10000) {
-					buzekHappy.src =
-						"https://via.placeholder.com/40/00FF00/000000?text=:-)";
-					komentarzTekst.textContent = "Gratulacje, masz ponad 10000 nadwyżki!";
-				} else {
-					buzekSad.src =
-						"https://via.placeholder.com/40/FF0000/FFFFFF?text=:-(";
-					komentarzTekst.textContent = "Nieźle, ale może być lepiej!";
-				}
-
-				counter++;
+					ser_milosci_zuzyj.toFixed(2);
 			}
 		</script>
 	</body>
