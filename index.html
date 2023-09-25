@@ -7,7 +7,8 @@
 			body {
 				font-family: Arial, sans-serif;
 				text-align: center;
-				background: linear-gradient(to bottom, #ffe6e6, transparent);
+				background-image: linear-gradient(to bottom, #ffe6e6, transparent),
+					url(/0d41b2f6b468e66c6b2d8d6ef6b9f3fd--outline-art-outline-drawings.jpg);
 				margin: 0;
 				padding: 0;
 			}
@@ -37,7 +38,7 @@
 			}
 
 			input[type="number"] {
-				width: 100%;
+				width: auto;
 				padding: 10px;
 				margin-bottom: 10px;
 				border: 1px solid #ccc;
@@ -79,7 +80,7 @@
 	<body>
 		<div class="container">
 			<h1>Kalkulator</h1>
-			<label for="dostawy">Dostawy:</label>
+			<label for="dostawy">Dostawy SG:</label>
 			<input type="number" id="dostawy" required /><br />
 
 			<label for="bolt">Bolt:</label>
@@ -94,7 +95,7 @@
 			<label for="start">Start:</label>
 			<input type="number" id="start" required /><br />
 
-			<label for="karta_raz">Karta raz:</label>
+			<label for="karta_raz">Zamknięcia karty pierwszej:</label>
 			<input
 				type="number"
 				id="karta_raz"
@@ -102,27 +103,24 @@
 				oninput="pokazKarty()" /><br />
 
 			<div class="karta-container" id="karta_drugie_container">
-				<label for="karta_drugie">Karta drugie (opcjonalnie):</label>
+				<label for="karta_drugie">Zamknięcia karty drugiej(opcjonalnie):</label>
 				<input type="number" id="karta_drugie" /><br />
 			</div>
 
 			<div class="karta-container" id="karta_trzecie_container">
-				<label for="karta_trzecie">Karta trzecie (opcjonalnie):</label>
+				<label for="karta_trzecie"
+					>Zamknięcia karty trzeciej (opcjonalnie):</label
+				>
 				<input type="number" id="karta_trzecie" /><br />
 			</div>
 
-			<label for="online">Online:</label>
+			<label for="online">Online SG:</label>
 			<input type="number" id="online" required /><br />
 
 			<label for="wczoraj_zostalo_sera">Wczoraj zostało sera:</label>
 			<input type="number" id="wczoraj_zostalo_sera" /><br />
 
-			<!-- Dodaj ten element wyniku "Wczoraj zostało sera" -->
-			<p>
-				Wczoraj zostało sera: <span id="wczoraj_zostalo_sera_wynik">0.00</span>
-			</p>
-
-			<h2>Wydatki (opcjonalne)</h2>
+			<h2>Wydatki</h2>
 			<div id="wydatki-container">
 				<label for="wyplata1">Wyplata 1:</label>
 				<input type="number" id="wyplata1" class="wyplaty" /><br />
@@ -133,11 +131,12 @@
 
 			<h2>Wynik</h2>
 			<p>Utarg: <span id="utarg">0.00</span></p>
+			<p>Koniec: <span id="koniec">0.00</span></p>
 			<p>Online: <span id="online_wynik">0.00</span></p>
 			<p>KO Karty i Online: <span id="ko_karty_online">0.00</span></p>
 			<p>Wydatki: <span id="wydatki">0.00</span></p>
-			<p>Dostawy: <span id="wynik_dostawy">0.00</span></p>
-			<p>Ser miłości zużyj: <span id="ser_milosci_zuzyj">0.00</span></p>
+			<p>Dostawy (SG+Wolt+Bolt): <span id="wynik_dostawy">0.00</span></p>
+			<p>Ser miłeś zużyj: <span id="ser_milosci_zuzyj">0.00</span></p>
 			<p>Sera miało zostać: <span id="sera_mialo_zostac">0.00</span></p>
 
 			<p class="komentarz" id="komentarzTekst">Nieźle, ale może być lepiej!</p>
@@ -151,7 +150,7 @@
 				const wydatkiContainer = document.getElementById("wydatki-container");
 				const newInput = document.createElement("div");
 				newInput.innerHTML = `<label for="wyplata${wydatkiCounter}">Wyplata ${wydatkiCounter}:</label>
-                              <input type="number" id="wyplata${wydatkiCounter}" class="wyplaty" /><br>`;
+                                      <input type="number" id="wyplata${wydatkiCounter}" class="wyplaty" /><br>`;
 				wydatkiContainer.appendChild(newInput);
 			}
 
@@ -235,10 +234,73 @@
 					wynik_dostawy.toFixed(2);
 				document.getElementById("ser_milosci_zuzyj").textContent =
 					ser_milosci_zuzyj.toFixed(2);
-				document.getElementById("wczoraj_zostalo_sera_wynik").textContent =
+				document.getElementById("wczoraj_zostalo_sera").textContent =
 					wczoraj_zostalo_sera.toFixed(2);
 				document.getElementById("sera_mialo_zostac").textContent =
 					sera_mialo_zostac.toFixed(2);
+
+				// Obliczenie kategorii "Koniec".
+				const koniec = utarg + start - ko_karty_online - wydatki;
+				document.getElementById("koniec").textContent = koniec.toFixed(2);
+
+				// Tablica z różnymi komentarzami w zależności od zakresu utargu
+				const komentarze = [
+					"Za mało na komentarz. Ćwicz dalej!",
+					"Trochę lepiej, ale możesz więcej!",
+					"Dobra robota. Idziesz w dobrym kierunku!",
+					"Świetny wynik. Kontynuuj tak!",
+					"Fantastycznie! Jesteś blisko swojego celu!",
+					"Znacznie powyżej oczekiwań. Brawo!",
+					"Nieźle, ale ciut więcej by było idealnie!",
+					"Wydaje się, że idziesz w dobrym kierunku!",
+					"Bardzo dobry wynik. Tak trzymaj!",
+					"Jesteś na dobrej drodze do sukcesu!",
+					"Impresjonujące! Działaj dalej!",
+					"Brawo! Twój trud się opłaca!",
+					"Doskonały wynik. Gratulacje!",
+					"Wspaniały rezultat. Kontynuuj tak!",
+					"Jesteś na najlepszej drodze!",
+					"Bardzo, ale to bardzo dobry wynik!",
+					"Niesamowite wyniki! Tak trzymaj!",
+				];
+
+				// Ustawianie komentarza w zależności od zakresu utargu
+				const komentarzTekst = document.getElementById("komentarzTekst");
+				if (utarg < 2000) {
+					komentarzTekst.textContent = komentarze[0];
+				} else if (utarg >= 2000 && utarg < 2500) {
+					komentarzTekst.textContent = komentarze[1];
+				} else if (utarg >= 2500 && utarg < 3000) {
+					komentarzTekst.textContent = komentarze[2];
+				} else if (utarg >= 3000 && utarg < 3500) {
+					komentarzTekst.textContent = komentarze[3];
+				} else if (utarg >= 3500 && utarg < 4000) {
+					komentarzTekst.textContent = komentarze[4];
+				} else if (utarg >= 4000 && utarg < 4500) {
+					komentarzTekst.textContent = komentarze[5];
+				} else if (utarg >= 4500 && utarg < 5000) {
+					komentarzTekst.textContent = komentarze[6];
+				} else if (utarg >= 5000 && utarg < 5500) {
+					komentarzTekst.textContent = komentarze[7];
+				} else if (utarg >= 5500 && utarg < 6000) {
+					komentarzTekst.textContent = komentarze[8];
+				} else if (utarg >= 6000 && utarg < 6500) {
+					komentarzTekst.textContent = komentarze[9];
+				} else if (utarg >= 6500 && utarg < 7000) {
+					komentarzTekst.textContent = komentarze[10];
+				} else if (utarg >= 7000 && utarg < 7500) {
+					komentarzTekst.textContent = komentarze[11];
+				} else if (utarg >= 7500 && utarg < 8000) {
+					komentarzTekst.textContent = komentarze[12];
+				} else if (utarg >= 8000 && utarg < 8500) {
+					komentarzTekst.textContent = komentarze[13];
+				} else if (utarg >= 8500 && utarg < 9000) {
+					komentarzTekst.textContent = komentarze[14];
+				} else if (utarg >= 9000 && utarg < 9500) {
+					komentarzTekst.textContent = komentarze[15];
+				} else if (utarg >= 9500 && utarg < 10000) {
+					komentarzTekst.textContent = komentarze[16];
+				}
 			}
 		</script>
 	</body>
