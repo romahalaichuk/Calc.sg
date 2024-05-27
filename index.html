@@ -12,6 +12,7 @@
 				margin: 0;
 				padding: 0;
 			}
+
 			.container {
 				background-color: #ffffff65;
 				border-radius: 10px;
@@ -25,14 +26,17 @@
 				justify-content: center;
 				min-height: 100vh;
 			}
+
 			h1 {
 				color: #333;
 			}
+
 			label {
 				font-size: 18px;
 				display: block;
 				margin-bottom: 10px;
 			}
+
 			input[type="number"] {
 				width: auto;
 				padding: 10px;
@@ -40,6 +44,7 @@
 				border: 1px solid #ccc;
 				border-radius: 5px;
 			}
+
 			button {
 				background-color: #4caf50;
 				color: white;
@@ -49,18 +54,22 @@
 				cursor: pointer;
 				margin-top: 20px;
 			}
+
 			button:hover {
 				background-color: #45a049;
 			}
+
 			p {
 				font-size: 20px;
 				background-color: #ffc0cb;
 				font-weight: bold;
 				margin-top: 10px;
 			}
+
 			.karta-container {
 				display: none;
 			}
+
 			.komentarz {
 				font-weight: normal;
 				font-size: 18px;
@@ -87,10 +96,23 @@
 			<input type="number" id="start" required /><br />
 
 			<label for="karta_raz">Zamknięcia karty pierwszej:</label>
-			<input type="number" id="karta_raz" required /><br />
+			<input
+				type="number"
+				id="karta_raz"
+				required
+				oninput="pokazKarty()" /><br />
 
-			<div id="karta-container"></div>
-			<button onclick="dodajKarta()">Dodaj kartę</button><br />
+			<div class="karta-container" id="karta_drugie_container">
+				<label for="karta_drugie">Zamknięcia karty drugiej(opcjonalnie):</label>
+				<input type="number" id="karta_drugie" /><br />
+			</div>
+
+			<div class="karta-container" id="karta_trzecie_container">
+				<label for="karta_trzecie"
+					>Zamknięcia karty trzeciej (opcjonalnie):</label
+				>
+				<input type="number" id="karta_trzecie" /><br />
+			</div>
 
 			<label for="online">Online SG:</label>
 			<input type="number" id="online" required /><br />
@@ -118,112 +140,107 @@
 			<p>Sera miało zostać: <span id="sera_mialo_zostac">0.00</span></p>
 
 			<p class="komentarz" id="komentarzTekst">Nieźle, ale może być lepiej!</p>
+			<button onclick="clearStorage()">Wyczyść dane</button>
 		</div>
 
 		<script>
-			let kartaCounter = 1;
-			let wydatekCounter = 1;
+			let wydatkiCounter = 1;
 
-			function dodajKarta() {
-				kartaCounter++;
-				const kartaContainer = document.getElementById("karta-container");
-				const newInput = document.createElement("div");
-				newInput.innerHTML = `<label for="karta_${kartaCounter}">Zamknięcia karty ${kartaCounter}:</label>
-                                  <input type="number" id="karta_${kartaCounter}" class="karty" /><br>`;
-				kartaContainer.appendChild(newInput);
-				zapiszKartyCounter();
-			}
-
-			function dodajWydatek() {
-				wydatekCounter++;
-				const wydatkiContainer = document.getElementById("wydatki-container");
-				const newInput = document.createElement("div");
-				newInput.innerHTML = `<label for="wyplata${wydatekCounter}">Wyplata ${wydatekCounter}:</label>
-                                  <input type="number" id="wyplata${wydatekCounter}" class="wyplaty" /><br>`;
-				wydatkiContainer.appendChild(newInput);
-				zapiszWydatekCounter();
-			}
-
-			function zapiszKartyCounter() {
-				localStorage.setItem("kartaCounter", kartaCounter);
-			}
-
-			function zapiszWydatekCounter() {
-				localStorage.setItem("wydatekCounter", wydatekCounter);
-			}
-
-			function zapiszDoLocalStorage() {
-				const inputs = document.querySelectorAll("input");
+			function saveToLocalStorage() {
+				const inputs = document.querySelectorAll('input[type="number"]');
 				inputs.forEach((input) => {
 					localStorage.setItem(input.id, input.value);
 				});
-
-				const now = new Date().getTime();
-				localStorage.setItem("timestamp", now);
 			}
 
-			function wczytajZLocalStorage() {
-				const now = new Date().getTime();
-				const timestamp = localStorage.getItem("timestamp");
-
-				if (timestamp && now - timestamp < 10800000) {
-					// 3 godziny = 10800000 ms
-					kartaCounter = parseInt(localStorage.getItem("kartaCounter")) || 1;
-					wydatekCounter =
-						parseInt(localStorage.getItem("wydatekCounter")) || 1;
-
-					// Przywracanie dynamicznych pól kart
-					for (let i = 2; i <= kartaCounter; i++) {
-						dodajKarta();
+			function loadFromLocalStorage() {
+				const inputs = document.querySelectorAll('input[type="number"]');
+				inputs.forEach((input) => {
+					if (localStorage.getItem(input.id)) {
+						input.value = localStorage.getItem(input.id);
 					}
+				});
+			}
 
-					// Przywracanie dynamicznych pól wydatków
-					for (let i = 2; i <= wydatekCounter; i++) {
-						dodajWydatek();
-					}
+			function clearStorage() {
+				localStorage.clear();
+				window.location.reload();
+			}
 
-					// Ustawianie wartości dla wszystkich pól
-					const inputs = document.querySelectorAll("input");
-					inputs.forEach((input) => {
-						const savedValue = localStorage.getItem(input.id);
-						if (savedValue) {
-							input.value = savedValue;
-						}
-					});
+			function dodajWydatek() {
+				wydatkiCounter++;
+				const wydatkiContainer = document.getElementById("wydatki-container");
+				const newInput = document.createElement("div");
+				newInput.innerHTML = `<label for="wyplata${wydatkiCounter}">Wyplata ${wydatkiCounter}:</label>
+			                          <input type="number" id="wyplata${wydatkiCounter}" class="wyplaty" /><br>`;
+				wydatkiContainer.appendChild(newInput);
+			}
+
+			function pokazKarty() {
+				const kartaRazValue = parseFloat(
+					document.getElementById("karta_raz").value
+				);
+				const kartaDrugieContainer = document.getElementById(
+					"karta_drugie_container"
+				);
+				const kartaTrzecieContainer = document.getElementById(
+					"karta_trzecie_container"
+				);
+
+				if (kartaRazValue >= 1) {
+					kartaDrugieContainer.style.display = "block";
 				} else {
-					localStorage.clear();
+					kartaDrugieContainer.style.display = "none";
+				}
+
+				if (kartaRazValue >= 2) {
+					kartaTrzecieContainer.style.display = "block";
+				} else {
+					kartaTrzecieContainer.style.display = "none";
 				}
 			}
 
 			function oblicz() {
-				const dostawy =
-					parseFloat(document.getElementById("dostawy").value) || 0;
-				const bolt = parseFloat(document.getElementById("bolt").value) || 0;
+				const dostawy = parseFloat(document.getElementById("dostawy").value);
+				const bolt = parseFloat(document.getElementById("bolt").value);
 				const wolt = parseFloat(document.getElementById("wolt").value) || 0;
-				const sala = parseFloat(document.getElementById("sala").value) || 0;
-				const start = parseFloat(document.getElementById("start").value) || 0;
-				const karta_raz =
-					parseFloat(document.getElementById("karta_raz").value) || 0;
-				const online = parseFloat(document.getElementById("online").value) || 0;
+				const sala = parseFloat(document.getElementById("sala").value);
+				const start = parseFloat(document.getElementById("start").value);
+				const karta_raz = parseFloat(
+					document.getElementById("karta_raz").value
+				);
+				const online = parseFloat(document.getElementById("online").value);
 
-				let karty_sum = karta_raz;
-				for (let i = 2; i <= kartaCounter; i++) {
-					karty_sum +=
-						parseFloat(document.getElementById(`karta_${i}`).value) || 0;
-				}
-
-				const utarg = dostawy + sala + karty_sum + online;
-				const online_wynik = online;
-				const ko_karty_online = karty_sum + online;
-
+				const wyplatyInputs = document.getElementsByClassName("wyplaty");
 				let wydatki = 0;
-				for (let i = 1; i <= wydatekCounter; i++) {
-					wydatki +=
-						parseFloat(document.getElementById(`wyplata${i}`).value) || 0;
+
+				for (let i = 0; i < wyplatyInputs.length; i++) {
+					const wyplata = parseFloat(wyplatyInputs[i].value) || 0;
+					wydatki += wyplata;
 				}
 
-				const wynik_dostawy = dostawy + wolt + bolt;
-				const ser_milosci_zuzyj = utarg * 0.12;
+				const karta_drugie =
+					parseFloat(document.getElementById("karta_drugie").value) || 0;
+				const karta_trzecie =
+					parseFloat(document.getElementById("karta_trzecie").value) || 0;
+
+				const utarg = dostawy + sala + bolt + wolt;
+				const online_wynik = online + bolt + wolt;
+				const ko_karty_online =
+					karta_raz + karta_drugie + karta_trzecie + online_wynik;
+				const wynik_obliczen =
+					dostawy +
+					sala +
+					start -
+					online -
+					karta_raz -
+					karta_drugie -
+					karta_trzecie -
+					wydatki;
+
+				const wynik_dostawy = dostawy + bolt + wolt;
+				const ser_milosci_zuzyj = Math.floor(utarg / 500) * 0.5;
+
 				const wczoraj_zostalo_sera =
 					parseFloat(document.getElementById("wczoraj_zostalo_sera").value) ||
 					0;
@@ -304,11 +321,12 @@
 					komentarzTekst.textContent = komentarze[16];
 				}
 
-				zapiszDoLocalStorage();
+				saveToLocalStorage();
 			}
 
 			window.onload = function () {
-				wczytajZLocalStorage();
+				loadFromLocalStorage();
+				pokazKarty();
 			};
 		</script>
 	</body>
