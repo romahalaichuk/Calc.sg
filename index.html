@@ -66,7 +66,8 @@
 				margin-top: 10px;
 			}
 
-			.karta-container {
+			.karta-container,
+			.wyplata-container {
 				display: none;
 			}
 
@@ -103,8 +104,10 @@
 				oninput="pokazKarty()" /><br />
 
 			<div class="karta-container" id="karta_drugie_container">
-				<label for="karta_drugie">Zamknięcia karty drugiej(opcjonalnie):</label>
-				<input type="number" id="karta_drugie" /><br />
+				<label for="karta_drugie"
+					>Zamknięcia karty drugiej (opcjonalnie):</label
+				>
+				<input type="number" id="karta_drugie" oninput="pokazKarty()" /><br />
 			</div>
 
 			<div class="karta-container" id="karta_trzecie_container">
@@ -123,10 +126,90 @@
 			<h2>Wydatki</h2>
 			<div id="wydatki-container">
 				<label for="wyplata1">Wyplata 1:</label>
-				<input type="number" id="wyplata1" class="wyplaty" /><br />
+				<input
+					type="number"
+					id="wyplata1"
+					class="wyplaty"
+					oninput="pokazWyplaty()" /><br />
+
+				<div class="wyplata-container" id="wyplata2_container">
+					<label for="wyplata2">Wyplata 2:</label>
+					<input
+						type="number"
+						id="wyplata2"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata3_container">
+					<label for="wyplata3">Wyplata 3:</label>
+					<input
+						type="number"
+						id="wyplata3"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata4_container">
+					<label for="wyplata4">Wyplata 4:</label>
+					<input
+						type="number"
+						id="wyplata4"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata5_container">
+					<label for="wyplata5">Wyplata 5:</label>
+					<input
+						type="number"
+						id="wyplata5"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata6_container">
+					<label for="wyplata6">Wyplata 6:</label>
+					<input
+						type="number"
+						id="wyplata6"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata7_container">
+					<label for="wyplata7">Wyplata 7:</label>
+					<input
+						type="number"
+						id="wyplata7"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata8_container">
+					<label for="wyplata8">Wyplata 8:</label>
+					<input
+						type="number"
+						id="wyplata8"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata9_container">
+					<label for="wyplata9">Wyplata 9:</label>
+					<input
+						type="number"
+						id="wyplata9"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
+				</div>
+
+				<div class="wyplata-container" id="wyplata10_container">
+					<label for="wyplata10">Wyplata 10:</label>
+					<input type="number" id="wyplata10" class="wyplaty" /><br />
+				</div>
 			</div>
 
-			<button onclick="dodajWydatek()">Dodaj kolejny wydatek</button>
 			<button onclick="oblicz()">Oblicz</button>
 
 			<h2>Wynik</h2>
@@ -144,8 +227,6 @@
 		</div>
 
 		<script>
-			let wydatkiCounter = 1;
-
 			function saveToLocalStorage() {
 				const inputs = document.querySelectorAll('input[type="number"]');
 				inputs.forEach((input) => {
@@ -156,67 +237,74 @@
 			function loadFromLocalStorage() {
 				const inputs = document.querySelectorAll('input[type="number"]');
 				inputs.forEach((input) => {
-					if (localStorage.getItem(input.id)) {
-						input.value = localStorage.getItem(input.id);
-					}
+					input.value = localStorage.getItem(input.id) || "";
 				});
+				pokazKarty();
+				pokazWyplaty();
+				oblicz();
 			}
 
 			function clearStorage() {
 				localStorage.clear();
-				window.location.reload();
-			}
-
-			function dodajWydatek() {
-				wydatkiCounter++;
-				const wydatkiContainer = document.getElementById("wydatki-container");
-				const newInput = document.createElement("div");
-				newInput.innerHTML = `<label for="wyplata${wydatkiCounter}">Wyplata ${wydatkiCounter}:</label>
-			                          <input type="number" id="wyplata${wydatkiCounter}" class="wyplaty" /><br>`;
-				wydatkiContainer.appendChild(newInput);
+				location.reload();
 			}
 
 			function pokazKarty() {
-				const kartaRazValue = parseFloat(
-					document.getElementById("karta_raz").value
-				);
-				const kartaDrugieContainer = document.getElementById(
-					"karta_drugie_container"
-				);
-				const kartaTrzecieContainer = document.getElementById(
+				const karta_drugie = document.getElementById("karta_drugie_container");
+				const karta_trzecie = document.getElementById(
 					"karta_trzecie_container"
 				);
 
-				if (kartaRazValue >= 1) {
-					kartaDrugieContainer.style.display = "block";
+				const karta_raz =
+					parseFloat(document.getElementById("karta_raz").value) || 0;
+				const karta_drugie_value =
+					parseFloat(document.getElementById("karta_drugie").value) || 0;
+
+				if (karta_raz > 0) {
+					karta_drugie.style.display = "block";
 				} else {
-					kartaDrugieContainer.style.display = "none";
+					karta_drugie.style.display = "none";
+					document.getElementById("karta_drugie").value = "";
 				}
 
-				if (kartaRazValue >= 2) {
-					kartaTrzecieContainer.style.display = "block";
+				if (karta_drugie_value > 0) {
+					karta_trzecie.style.display = "block";
 				} else {
-					kartaTrzecieContainer.style.display = "none";
+					karta_trzecie.style.display = "none";
+					document.getElementById("karta_trzecie").value = "";
+				}
+			}
+
+			function pokazWyplaty() {
+				for (let i = 1; i <= 10; i++) {
+					const wyplata = document.getElementById(`wyplata${i}`);
+					const nextWyplataContainer = document.getElementById(
+						`wyplata${i + 1}_container`
+					);
+					if (wyplata && wyplata.value > 0) {
+						nextWyplataContainer.style.display = "block";
+					} else if (nextWyplataContainer) {
+						nextWyplataContainer.style.display = "none";
+						document.getElementById(`wyplata${i + 1}`).value = "";
+					}
 				}
 			}
 
 			function oblicz() {
-				const dostawy = parseFloat(document.getElementById("dostawy").value);
-				const bolt = parseFloat(document.getElementById("bolt").value);
+				const dostawy =
+					parseFloat(document.getElementById("dostawy").value) || 0;
+				const bolt = parseFloat(document.getElementById("bolt").value) || 0;
 				const wolt = parseFloat(document.getElementById("wolt").value) || 0;
-				const sala = parseFloat(document.getElementById("sala").value);
-				const start = parseFloat(document.getElementById("start").value);
-				const karta_raz = parseFloat(
-					document.getElementById("karta_raz").value
-				);
-				const online = parseFloat(document.getElementById("online").value);
+				const sala = parseFloat(document.getElementById("sala").value) || 0;
+				const start = parseFloat(document.getElementById("start").value) || 0;
+				const karta_raz =
+					parseFloat(document.getElementById("karta_raz").value) || 0;
+				const online = parseFloat(document.getElementById("online").value) || 0;
 
-				const wyplatyInputs = document.getElementsByClassName("wyplaty");
 				let wydatki = 0;
-
-				for (let i = 0; i < wyplatyInputs.length; i++) {
-					const wyplata = parseFloat(wyplatyInputs[i].value) || 0;
-					wydatki += wyplata;
+				for (let i = 1; i <= 10; i++) {
+					wydatki +=
+						parseFloat(document.getElementById(`wyplata${i}`).value) || 0;
 				}
 
 				const karta_drugie =
@@ -224,10 +312,17 @@
 				const karta_trzecie =
 					parseFloat(document.getElementById("karta_trzecie").value) || 0;
 
-				const utarg = dostawy + sala + bolt + wolt;
-				const online_wynik = online + bolt + wolt;
+				const utarg =
+					dostawy +
+					sala +
+					start +
+					karta_raz +
+					karta_drugie +
+					karta_trzecie +
+					online;
 				const ko_karty_online =
-					karta_raz + karta_drugie + karta_trzecie + online_wynik;
+					karta_raz + karta_drugie + karta_trzecie + online;
+				const online_wynik = online;
 				const wynik_obliczen =
 					dostawy +
 					sala +
@@ -326,7 +421,6 @@
 
 			window.onload = function () {
 				loadFromLocalStorage();
-				pokazKarty();
 			};
 		</script>
 	</body>
