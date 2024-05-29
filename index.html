@@ -94,8 +94,8 @@
 <body>
     <div class="container">
         <h1>Kalkulator</h1>
-        <label for="dostawy">Dostawy SG:</label>
-        <input type="text" id="dostawy" readonly onclick="toggleDostawyInputs()" />
+        <label for="dostawy">Dostawy SG:</label><button onclick="oblicz()">Oblicz</button>
+        <input type="text" id="dostawy" readonly onclick="toggleDostawyInputs()" /><button id="toggleButton" onclick="toggleAllDostawy()">Dodaj/Ukryj dostawę</button>
         <div id="dostawy-inputs"></div>
 		<button id="toggleButton" onclick="toggleAllDostawy()">Dodaj/Ukryj dostawę</button>
 
@@ -194,7 +194,7 @@
         <p>KO Karty i Online: <span id="ko_karty_online">0.00</span></p>
 
         <p>Wydatki: <span id="wydatki" class="negative-check">0.00</span></p>
-		<p>Dostawy (SG+Wolt+Bolt): <span id="wynik_dostawy" class="negative-check">0.00</span></p>
+		<p>Dostawy (SG+Wolt+Bolt+Uber): <span id="wynik_dostawy" class="negative-check">0.00</span></p>
 
         <p>Ser miłeś zużyj: <span id="ser_milosci_zuzyj" class="negative-check">0.00</span></p>
         <p>Sera miało zostać: <span id="sera_mialo_zostac" class="negative-check">0.00</span></p>
@@ -204,7 +204,32 @@
 			<button onclick="clearStorage()">Wyczyść dane</button>
 		</div>
 
-		<script>
+		<script>function saveDostawyToLocalStorage() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach((input) => {
+                localStorage.setItem(input.id, input.value);
+            });
+        }
+        
+        function loadFromLocalStorage() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach((input) => {
+                const storedValue = localStorage.getItem(input.id);
+                if (storedValue !== null) {
+                    input.value = storedValue;
+                }
+            });
+        }
+        
+        window.onload = function () {
+            loadFromLocalStorage();
+            addNextDostawa(1); 
+        };
+        
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', saveDostawyToLocalStorage);
+        });
+        
 		function saveToLocalStorage() {
     const inputs = document.querySelectorAll('input[type="number"]');
     inputs.forEach((input) => {
@@ -394,7 +419,7 @@ function oblicz() {
 
 
 	
-				saveToLocalStorage(); checkNegativeValues()
+				saveToLocalStorage();
 			}
 	
 			window.onload = function () {
@@ -435,14 +460,14 @@ function oblicz() {
 }
 window.onload = function () {
     loadFromLocalStorage();
-    addNextDostawa(1); // Ensure at least one dostawa input exists on load
+    addNextDostawa(1); 
 };
 
 	
 function addNextDostawa(index) {
     const lastDostawaInput = document.querySelector('.dostawa-value:last-of-type');
     if (lastDostawaInput.value.trim() === "") {
-        return; // Jeśli ostatni input jest pusty, nie dodajemy kolejnego inputa
+        return; 
     }
 
     const dostawaInput = document.getElementById(`dostawa${index}`);
@@ -475,7 +500,7 @@ function addNextDostawa(index) {
     });
 }
 
-// Wywołaj funkcję w celu sprawdzenia na początku
+
 checkNegativeValues();
 
 		</script>
