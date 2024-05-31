@@ -9,7 +9,7 @@
 				margin: 0;
 				padding: 0;
 				font-family: Arial, sans-serif;
-				background-image: url("/img/rr.png");
+				background-image: url("./img/rr.png");
 				background-size: cover;
 				background-position: center;
 				color: #fff;
@@ -114,6 +114,7 @@
 					var listItem = document.createElement("li");
 					listItem.textContent = product;
 					listItem.style.animationDelay = index * 0.2 + "s";
+					listItem.classList.add("rotatable"); // Dodanie klasy rotatable
 					productList.appendChild(listItem);
 				});
 			}
