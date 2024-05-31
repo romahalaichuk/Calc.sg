@@ -80,6 +80,7 @@
 				opacity: 0;
 				transform: translateY(-20px);
 				animation: fadeInListItem 0.5s ease forwards;
+				transition: transform 0.2s ease; /* Dodajemy transition dla transformacji */
 			}
 
 			@keyframes fadeInListItem {
@@ -106,6 +107,7 @@
 				border-radius: 5px;
 				cursor: pointer;
 				transition: background-color 0.3s ease;
+				transition: transform 0.2s ease; /* Dodajemy transition dla transformacji */
 			}
 
 			.back-button:hover {
@@ -113,7 +115,7 @@
 			}
 
 			.rotatable {
-				transition: transform 0.2s ease;
+				transition: transform 0.2s ease; /* Dodajemy transition dla transformacji */
 			}
 		</style>
 	</head>
@@ -145,7 +147,7 @@
 					var listItem = document.createElement("li");
 					listItem.textContent = product;
 					listItem.style.animationDelay = index * 0.1 + "s";
-					listItem.classList.add("rotatable"); // Dodanie klasy rotatable
+					listItem.classList.add("rotatable"); // Dodajemy klasę rotatable
 					productList.appendChild(listItem);
 				});
 			}
