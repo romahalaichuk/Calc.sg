@@ -47,12 +47,26 @@
 				background-color: rgba(255, 255, 255, 0.1);
 				border-radius: 10px;
 				box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+				overflow: hidden;
 			}
 
 			.product-list ul {
 				list-style: none;
 				padding: 0;
 				margin: 0;
+				opacity: 0;
+				animation: fadeInList 1s ease forwards;
+			}
+
+			@keyframes fadeInList {
+				from {
+					opacity: 0;
+					transform: translateY(-20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
 			}
 
 			.product-list li {
@@ -63,6 +77,20 @@
 				box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
 				background-color: rgba(255, 255, 255, 0.2);
 				transition: background-color 0.3s ease;
+				opacity: 0;
+				transform: translateY(-20px);
+				animation: fadeInListItem 0.5s ease forwards;
+			}
+
+			@keyframes fadeInListItem {
+				from {
+					opacity: 0;
+					transform: translateY(-20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
 			}
 
 			.product-list li:hover {
@@ -102,16 +130,17 @@
 				"Cola-Cola 0%",
 				"Fanta",
 				"Sprite",
-				"Sok jablkowy",
+				"Sok jabłkowy",
 				"Tonik",
 			];
 
 			function displayProducts() {
 				var productList = document.getElementById("product-list");
 				productList.innerHTML = "";
-				products.forEach(function (product) {
+				products.forEach(function (product, index) {
 					var listItem = document.createElement("li");
 					listItem.textContent = product;
+					listItem.style.animationDelay = index * 0.1 + "s";
 					productList.appendChild(listItem);
 				});
 			}
@@ -120,6 +149,18 @@
 
 			function goToIndex() {
 				window.location.href = "index.html";
+			}
+
+			window.addEventListener("deviceorientation", handleOrientation);
+
+			function handleOrientation(event) {
+				var tiltLR = event.gamma;
+				var tiltFB = event.beta;
+
+				var rotatables = document.querySelectorAll(".rotatable");
+				rotatables.forEach(function (item) {
+					item.style.transform = "rotate(" + -tiltLR + "deg)";
+				});
 			}
 		</script>
 	</body>
