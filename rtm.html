@@ -97,7 +97,8 @@
 				background-color: rgba(255, 255, 255, 0.3);
 			}
 
-			.back-button {
+			.back-button,
+			.toggle-button {
 				margin-top: 20px;
 				padding: 10px 20px;
 				background-color: #4caf50;
@@ -108,7 +109,8 @@
 				transition: background-color 0.3s ease;
 			}
 
-			.back-button:hover {
+			.back-button:hover,
+			.toggle-button:hover {
 				background-color: #45a049;
 			}
 
@@ -126,7 +128,10 @@
 				<ul id="product-list" class="rotatable"></ul>
 			</div>
 
-			<button class="back-button" onclick="goToIndex()">Wróć</button>
+			<button class="back-button rotatable" onclick="goToIndex()">Wróć</button>
+			<button class="toggle-button" onclick="toggleOrientation()">
+				Enable Orientation
+			</button>
 		</div>
 
 		<script>
@@ -155,7 +160,19 @@
 				window.location.href = "index.html";
 			}
 
-			window.addEventListener("deviceorientation", handleOrientation);
+			var orientationEnabled = false;
+			var toggleButton = document.querySelector(".toggle-button");
+
+			function toggleOrientation() {
+				if (orientationEnabled) {
+					window.removeEventListener("deviceorientation", handleOrientation);
+					toggleButton.textContent = "Enable Orientation";
+				} else {
+					window.addEventListener("deviceorientation", handleOrientation);
+					toggleButton.textContent = "Disable Orientation";
+				}
+				orientationEnabled = !orientationEnabled;
+			}
 
 			function handleOrientation(event) {
 				var tiltLR = event.gamma;
