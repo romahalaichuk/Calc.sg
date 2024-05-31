@@ -1,438 +1,574 @@
-
-<html>
+<!DOCTYPE html>
+<html lang="pl">
 	<head>
 		<title>Kalkulator</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<style>
-	    body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-image: linear-gradient(to bottom, #ffe6e6, transparent),
-                url(./img/0d41b2f6b468e66c6b2d8d6ef6b9f3fd--outline-art-outline-drawings.jpg);
-            margin: 0;
-            padding: 0;
-        }
-		.negative-value {
-        color: red;
-        font-weight: bold;
-        animation: pulse 1s infinite alternate;
-    }
+			body {
+				font-family: Arial, sans-serif;
+				background-image: linear-gradient(to bottom, #ffe6e6, transparent),
+					url(./img/0d41b2f6b468e66c6b2d8d6ef6b9f3fd--outline-art-outline-drawings.jpg);
+				margin: 0;
+				padding: 0;
+			}
 
-    @keyframes pulse {
-        from {
-            font-size: 1em;
-        }
-        to {
-            font-size: 1.2em;
-        }
-    }
-        .container {
-            background-color: #ffffff65;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 80%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+			.container {
+				display: flex;
+				flex-direction: row;
+				align-items: flex-start;
+				justify-content: flex-start;
+				height: 100vh;
+				padding: 20px;
+				box-sizing: border-box;
+			}
 
-        h1 {
-            color: #333;
-        }
+			.menu {
+				background-color: #ffffff65;
+				border-radius: 10px;
+				box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+				padding: 20px;
+				margin-right: 20px;
+			}
 
-        label {
-            font-size: 18px;
-            display: block;
-            margin-bottom: 10px;
-        }
+			.menu ul {
+				list-style-type: none;
+				padding: 0;
+			}
 
-        input[type="number"] {
-            width: auto;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+			.menu li {
+				margin-bottom: 10px;
+			}
 
-        button {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+			.menu a {
+				display: block;
+				padding: 10px;
+				background-color: #4caf50;
+				color: white;
+				text-decoration: none;
+				text-align: center;
+				border-radius: 5px;
+				transition: background-color 0.3s ease;
+			}
 
-        button:hover {
-            background-color: #45a049;
-        }
+			.menu a:hover {
+				background-color: #45a049;
+			}
 
-        p {
-            font-size: 20px;
-            background-color: #ffc0cb;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+			.content {
+				background-color: #ffffff65;
+				border-radius: 10px;
+				box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+				padding: 20px;
+				flex-grow: 1;
+			}
 
-        .karta-container,
-        .wyplata-container {
-            display: none;
-        }
+			h1 {
+				color: #333;
+				text-align: center;
+			}
 
-        .komentarz {
-            font-weight: normal;
-            font-size: 18px;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Kalkulator</h1>
-        <label for="dostawy">Dostawy SG:</label><button onclick="oblicz()">Oblicz</button>
-        <input type="text" id="dostawy" readonly onclick="toggleDostawyInputs()" /><button id="toggleButton" onclick="toggleAllDostawy()">Dodaj/Ukryj dostawę</button>
-        <div id="dostawy-inputs"></div>
-		<button id="toggleButton" onclick="toggleAllDostawy()">Dodaj/Ukryj dostawę</button>
+			label {
+				font-size: 18px;
+				display: block;
+				margin-bottom: 10px;
+			}
 
-        <label for="bolt">Bolt:</label>
-        <input type="number" id="bolt" required /><br />
+			input[type="number"] {
+				width: auto;
+				padding: 10px;
+				margin-bottom: 10px;
+				border: 1px solid #ccc;
+				border-radius: 5px;
+			}
 
-        <label for="wolt">Wolt (opcjonalnie):</label>
-        <input type="number" id="wolt" /><br />
-        <label for="uber">Uber (opcjonalnie):</label>
-        <input type="number" id="uber" />
-        <label for="sala">Sala:</label>
-        <input type="number" id="sala" required /><br />
+			button {
+				background-color: #4caf50;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+				margin-top: 20px;
+			}
 
-        <label for="start">Start:</label>
-        <input type="number" id="start" required /><br />
+			button:hover {
+				background-color: #45a049;
+			}
 
-        <label for="karta_raz">Zamknięcia karty pierwszej:</label>
-        <input type="number" id="karta_raz" required oninput="pokazKarty()" /><br />
+			p {
+				font-size: 20px;
+				background-color: #ffc0cb;
+				font-weight: bold;
+				margin-top: 10px;
+			}
 
-        <div class="karta-container" id="karta_drugie_container">
-            <label for="karta_drugie">Zamknięcia karty drugiej (opcjonalnie):</label>
-            <input type="number" id="karta_drugie" oninput="pokazKarty()" /><br />
-        </div>
+			.karta-container,
+			.wyplata-container {
+				display: none;
+			}
 
-        <div class="karta-container" id="karta_trzecie_container">
-            <label for="karta_trzecie">Zamknięcia karty trzeciej (opcjonalnie):</label>
-            <input type="number" id="karta_trzecie" /><br />
-        </div>
+			.komentarz {
+				font-weight: normal;
+				font-size: 18px;
+				margin-top: 10px;
+			}
 
-    
+			@keyframes pulse {
+				from {
+					font-size: 1em;
+				}
+				to {
+					font-size: 1.2em;
+				}
+			}
 
-        <label for="wczoraj_zostalo_sera">Wczoraj zostało sera:</label>
-        <input type="number" id="wczoraj_zostalo_sera" /><br />
+			.negative-value {
+				color: red;
+				font-weight: bold;
+				animation: pulse 1s infinite alternate;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="menu">
+				<h2>Dostawy</h2>
+				<ul>
+					<li><a href="mille.html">Mille</a></li>
+					<li><a href="makro.html">Makro</a></li>
+					<li><a href="rtm.html">RTM</a></li>
+					<li><a href="piwo.html">Piwo</a></li>
+					<li><a href="coca-cola.html">Coca-Cola</a></li>
+				</ul>
+			</div>
+			<div class="content">
+				<h1>Kalkulator</h1>
+				<label for="dostawy">Dostawy SG:</label
+				><button onclick="oblicz()">Oblicz</button>
+				<input
+					type="text"
+					id="dostawy"
+					readonly
+					onclick="toggleDostawyInputs()" /><button
+					id="toggleButton"
+					onclick="toggleAllDostawy()">
+					Dodaj/Ukryj dostawę
+				</button>
+				<div id="dostawy-inputs"></div>
 
-        <h2>Wydatki</h2>
-        <div id="wydatki-container">
-            <label for="wyplata1">Wyplata 1:</label>
-            <input type="number" id="wyplata1" class="wyplaty" oninput="pokazWyplaty()" /><br />
+				<label for="bolt">Bolt:</label>
+				<input type="number" id="bolt" required /><br />
 
-            <div class="wyplata-container" id="wyplata2_container">
-                <label for="wyplata2">Wyplata 2:</label>
-                <input type="number" id="wyplata2" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+				<label for="wolt">Wolt (opcjonalnie):</label>
+				<input type="number" id="wolt" /><br />
+				<label for="uber">Uber (opcjonalnie):</label>
+				<input type="number" id="uber" />
+				<label for="sala">Sala:</label>
+				<input type="number" id="sala" required /><br />
 
-            <div class="wyplata-container" id="wyplata3_container">
-                <label for="wyplata3">Wyplata 3:</label>
-                <input type="number" id="wyplata3" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+				<label for="start">Start:</label>
+				<input type="number" id="start" required /><br />
 
-            <div class="wyplata-container" id="wyplata4_container">
-                <label for="wyplata4">Wyplata 4:</label>
-                <input type="number" id="wyplata4" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+				<label for="karta_raz">Zamknięcia karty pierwszej:</label>
+				<input
+					type="number"
+					id="karta_raz"
+					required
+					oninput="pokazKarty()" /><br />
 
-            <div class="wyplata-container" id="wyplata5_container">
-                <label for="wyplata5">Wyplata 5:</label>
-                <input type="number" id="wyplata5" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+				<div class="karta-container" id="karta_drugie_container">
+					<label for="karta_drugie"
+						>Zamknięcia karty drugiej (opcjonalnie):</label
+					>
+					<input type="number" id="karta_drugie" oninput="pokazKarty()" /><br />
+				</div>
 
-            <div class="wyplata-container" id="wyplata6_container">
-                <label for="wyplata6">Wyplata 6:</label>
-                <input type="number" id="wyplata6" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+				<div class="karta-container" id="karta_trzecie_container">
+					<label for="karta_trzecie"
+						>Zamknięcia karty trzeciej (opcjonalnie):</label
+					>
+					<input type="number" id="karta_trzecie" /><br />
+				</div>
 
-            <div class="wyplata-container" id="wyplata7_container">
-                <label for="wyplata7">Wyplata 7:</label>
-                <input type="number" id="wyplata7" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+				<label for="wczoraj_zostalo_sera">Wczoraj zostało sera:</label>
+				<input type="number" id="wczoraj_zostalo_sera" /><br />
 
-            <div class="wyplata-container" id="wyplata8_container">
-                <label for="wyplata8">Wyplata 8:</label>
-                <input type="number" id="wyplata8" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+				<h2>Wydatki</h2>
+				<div id="wydatki-container">
+					<label for="wyplata1">Wyplata 1:</label>
+					<input
+						type="number"
+						id="wyplata1"
+						class="wyplaty"
+						oninput="pokazWyplaty()" /><br />
 
-            <div class="wyplata-container" id="wyplata9_container">
-                <label for="wyplata9">Wyplata 9:</label>
-                <input type="number" id="wyplata9" class="wyplaty" oninput="pokazWyplaty()" /><br />
-            </div>
+					<div class="wyplata-container" id="wyplata2_container">
+						<label for="wyplata2">Wyplata 2:</label>
+						<input
+							type="number"
+							id="wyplata2"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-            <div class="wyplata-container" id="wyplata10_container">
-                <label for="wyplata10">Wyplata 10:</label>
-                <input type="number" id="wyplata10" class="wyplaty" /><br />
-            </div>
-        </div>
+					<div class="wyplata-container" id="wyplata3_container">
+						<label for="wyplata3">Wyplata 3:</label>
+						<input
+							type="number"
+							id="wyplata3"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-        <button onclick="oblicz()">Oblicz</button>
+					<div class="wyplata-container" id="wyplata4_container">
+						<label for="wyplata4">Wyplata 4:</label>
+						<input
+							type="number"
+							id="wyplata4"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-        <h2>Wynik</h2>
-        <p>Utarg: <span id="utarg" class="negative-check">0.00</span></p>
-		<p>Koniec: <span id="koniec" class="negative-check">0.00</span></p>
-		<p>Dostawy SG: <span id="dostawy_sg_wynik" class="negative-check">0.00</span></p>
+					<div class="wyplata-container" id="wyplata5_container">
+						<label for="wyplata5">Wyplata 5:</label>
+						<input
+							type="number"
+							id="wyplata5"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-        <p>Online SG: <span id="online_sg_wynik" class="negative-check">0.00</span></p>
+					<div class="wyplata-container" id="wyplata6_container">
+						<label for="wyplata6">Wyplata 6:</label>
+						<input
+							type="number"
+							id="wyplata6"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-		<p>Online: <span id="online_wynik" class="negative-check">0.00</span></p>
-        <p>KO Karty i Online: <span id="ko_karty_online">0.00</span></p>
+					<div class="wyplata-container" id="wyplata7_container">
+						<label for="wyplata7">Wyplata 7:</label>
+						<input
+							type="number"
+							id="wyplata7"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-        <p>Wydatki: <span id="wydatki" class="negative-check">0.00</span></p>
-		<p>Dostawy (SG+Wolt+Bolt+Uber): <span id="wynik_dostawy" class="negative-check">0.00</span></p>
+					<div class="wyplata-container" id="wyplata8_container">
+						<label for="wyplata8">Wyplata 8:</label>
+						<input
+							type="number"
+							id="wyplata8"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-        <p>Ser miłeś zużyj: <span id="ser_milosci_zuzyj" class="negative-check">0.00</span></p>
-        <p>Sera miało zostać: <span id="sera_mialo_zostac" class="negative-check">0.00</span></p>
+					<div class="wyplata-container" id="wyplata9_container">
+						<label for="wyplata9">Wyplata 9:</label>
+						<input
+							type="number"
+							id="wyplata9"
+							class="wyplaty"
+							oninput="pokazWyplaty()" /><br />
+					</div>
 
-        <p class="komentarz" id="komentarzTekst"></p>
-    </div>
+					<div class="wyplata-container" id="wyplata10_container">
+						<label for="wyplata10">Wyplata 10:</label>
+						<input type="number" id="wyplata10" class="wyplaty" /><br />
+					</div>
+				</div>
+
+				<button onclick="oblicz()">Oblicz</button>
+
+				<h2>Wynik</h2>
+				<p>Utarg: <span id="utarg" class="negative-check">0.00</span></p>
+				<p>Koniec: <span id="koniec" class="negative-check">0.00</span></p>
+				<p>
+					Dostawy SG:
+					<span id="dostawy_sg_wynik" class="negative-check">0.00</span>
+				</p>
+
+				<p>
+					Online SG:
+					<span id="online_sg_wynik" class="negative-check">0.00</span>
+				</p>
+
+				<p>
+					Online: <span id="online_wynik" class="negative-check">0.00</span>
+				</p>
+				<p>KO Karty i Online: <span id="ko_karty_online">0.00</span></p>
+
+				<p>Wydatki: <span id="wydatki" class="negative-check">0.00</span></p>
+				<p>
+					Dostawy (SG+Wolt+Bolt+Uber):
+					<span id="wynik_dostawy" class="negative-check">0.00</span>
+				</p>
+
+				<p>
+					Ser miłeś zużyj:
+					<span id="ser_milosci_zuzyj" class="negative-check">0.00</span>
+				</p>
+				<p>
+					Sera miało zostać:
+					<span id="sera_mialo_zostac" class="negative-check">0.00</span>
+				</p>
+
+				<p class="komentarz" id="komentarzTekst"></p>
+			</div>
 			<button onclick="clearStorage()">Wyczyść dane</button>
 		</div>
 
-		<script>function saveDostawyToLocalStorage() {
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach((input) => {
-                localStorage.setItem(input.id, input.value);
-            });
-        }
-        
-        function loadFromLocalStorage() {
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach((input) => {
-                const storedValue = localStorage.getItem(input.id);
-                if (storedValue !== null) {
-                    input.value = storedValue;
-                }
-            });
-        }
-        
-        window.onload = function () {
-            loadFromLocalStorage();
-            addNextDostawa(1); 
-        };
-        
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', saveDostawyToLocalStorage);
-        });
-        
-		function saveToLocalStorage() {
-    const inputs = document.querySelectorAll('input[type="number"]');
-    inputs.forEach((input) => {
-        localStorage.setItem(input.id, input.value);
-    });
+		<script>
+			function saveDostawyToLocalStorage() {
+				const inputs = document.querySelectorAll('input[type="number"]');
+				inputs.forEach((input) => {
+					localStorage.setItem(input.id, input.value);
+				});
+			}
 
-    const dostawaValues = document.querySelectorAll('.dostawa-value');
-    dostawaValues.forEach((dostawa, index) => {
-        localStorage.setItem(`dostawa${index + 1}`, dostawa.value);
-    });
-}
+			function loadFromLocalStorage() {
+				const inputs = document.querySelectorAll('input[type="number"]');
+				inputs.forEach((input) => {
+					const storedValue = localStorage.getItem(input.id);
+					if (storedValue !== null) {
+						input.value = storedValue;
+					}
+				});
+			}
 
+			window.onload = function () {
+				loadFromLocalStorage();
+				addNextDostawa(1);
+			};
 
-function loadFromLocalStorage() {
-    const inputs = document.querySelectorAll('input[type="number"]');
-    inputs.forEach((input) => {
-        input.value = localStorage.getItem(input.id) || "";
-    });
+			document.querySelectorAll('input[type="number"]').forEach((input) => {
+				input.addEventListener("input", saveDostawyToLocalStorage);
+			});
 
-    const dostawaValues = document.querySelectorAll('.dostawa-value');
-    dostawaValues.forEach((dostawa, index) => {
-        dostawa.value = localStorage.getItem(`dostawa${index + 1}`) || "";
-    });
+			function saveToLocalStorage() {
+				const inputs = document.querySelectorAll('input[type="number"]');
+				inputs.forEach((input) => {
+					localStorage.setItem(input.id, input.value);
+				});
 
-    pokazKarty();
-    pokazWyplaty();
-    oblicz();
-}
+				const dostawaValues = document.querySelectorAll(".dostawa-value");
+				dostawaValues.forEach((dostawa, index) => {
+					localStorage.setItem(`dostawa${index + 1}`, dostawa.value);
+				});
+			}
 
-function clearStorage() {
-    localStorage.clear();
-    location.reload();
-}
+			function loadFromLocalStorage() {
+				const inputs = document.querySelectorAll('input[type="number"]');
+				inputs.forEach((input) => {
+					input.value = localStorage.getItem(input.id) || "";
+				});
 
-function pokazKarty() {
-    const karta_drugie = document.getElementById("karta_drugie_container");
-    const karta_trzecie = document.getElementById("karta_trzecie_container");
+				const dostawaValues = document.querySelectorAll(".dostawa-value");
+				dostawaValues.forEach((dostawa, index) => {
+					dostawa.value = localStorage.getItem(`dostawa${index + 1}`) || "";
+				});
 
-    const karta_raz = parseFloat(document.getElementById("karta_raz").value) || 0;
-    const karta_drugie_value = parseFloat(document.getElementById("karta_drugie").value) || 0;
+				pokazKarty();
+				pokazWyplaty();
+				oblicz();
+			}
 
-    if (karta_raz > 0) {
-        karta_drugie.style.display = "block";
-    } else {
-        karta_drugie.style.display = "none";
-        document.getElementById("karta_drugie").value = "";
-    }
+			function clearStorage() {
+				localStorage.clear();
+				location.reload();
+			}
 
-    if (karta_drugie_value > 0) {
-        karta_trzecie.style.display = "block";
-    } else {
-        karta_trzecie.style.display = "none";
-        document.getElementById("karta_trzecie").value = "";
-    }
-}
+			function pokazKarty() {
+				const karta_drugie = document.getElementById("karta_drugie_container");
+				const karta_trzecie = document.getElementById(
+					"karta_trzecie_container"
+				);
 
-function pokazWyplaty() {
-    for (let i = 1; i <= 10; i++) {
-        const wyplata = document.getElementById(`wyplata${i}`);
-        const nextWyplataContainer = document.getElementById(`wyplata${i + 1}_container`);
-        if (wyplata && wyplata.value > 0) {
-            nextWyplataContainer.style.display = "block";
-        } else if (nextWyplataContainer) {
-            nextWyplataContainer.style.display = "none";
-            const nextWyplata = document.getElementById(`wyplata${i + 1}`);
-            if (nextWyplata) {
-                nextWyplata.value = "";
-            }
-        }
-    }
-}
+				const karta_raz =
+					parseFloat(document.getElementById("karta_raz").value) || 0;
+				const karta_drugie_value =
+					parseFloat(document.getElementById("karta_drugie").value) || 0;
 
-function oblicz() {
-    let sala = parseFloat(document.getElementById("sala").value) || 0;
-    let bolt = parseFloat(document.getElementById("bolt").value) || 0;
-    let wolt = parseFloat(document.getElementById("wolt").value) || 0;
-    let uber = parseFloat(document.getElementById("uber").value) || 0;
+				if (karta_raz > 0) {
+					karta_drugie.style.display = "block";
+				} else {
+					karta_drugie.style.display = "none";
+					document.getElementById("karta_drugie").value = "";
+				}
 
-    let dostawyInputs = document.querySelectorAll(".dostawa-value");
-    let dostawySum = 0;
-    let onlineSGSum = 0;
+				if (karta_drugie_value > 0) {
+					karta_trzecie.style.display = "block";
+				} else {
+					karta_trzecie.style.display = "none";
+					document.getElementById("karta_trzecie").value = "";
+				}
+			}
 
-    dostawyInputs.forEach(input => {
-        let inputValue = parseFloat(input.value) || 0;
-        dostawySum += inputValue;
-        let platnosc = input.nextElementSibling.value;
-        if (platnosc === 'online') {
-            onlineSGSum += inputValue;
-        }
-    });
+			function pokazWyplaty() {
+				for (let i = 1; i <= 10; i++) {
+					const wyplata = document.getElementById(`wyplata${i}`);
+					const nextWyplataContainer = document.getElementById(
+						`wyplata${i + 1}_container`
+					);
+					if (wyplata && wyplata.value > 0) {
+						nextWyplataContainer.style.display = "block";
+					} else if (nextWyplataContainer) {
+						nextWyplataContainer.style.display = "none";
+						const nextWyplata = document.getElementById(`wyplata${i + 1}`);
+						if (nextWyplata) {
+							nextWyplata.value = "";
+						}
+					}
+				}
+			}
 
-    let utarg = sala + dostawySum + wolt + uber + bolt;
-    document.getElementById("utarg").innerText = utarg.toFixed(2);
+			function oblicz() {
+				let sala = parseFloat(document.getElementById("sala").value) || 0;
+				let bolt = parseFloat(document.getElementById("bolt").value) || 0;
+				let wolt = parseFloat(document.getElementById("wolt").value) || 0;
+				let uber = parseFloat(document.getElementById("uber").value) || 0;
 
-    document.getElementById("online_sg_wynik").innerText = onlineSGSum.toFixed(2);
-    let onlineSum = bolt + wolt + uber + onlineSGSum;
-    document.getElementById("online_wynik").innerText = onlineSum.toFixed(2);
+				let dostawyInputs = document.querySelectorAll(".dostawa-value");
+				let dostawySum = 0;
+				let onlineSGSum = 0;
 
-    let karta_raz = parseFloat(document.getElementById("karta_raz").value) || 0;
-    let karta_drugie = parseFloat(document.getElementById("karta_drugie").value) || 0;
-    let karta_trzecie = parseFloat(document.getElementById("karta_trzecie").value) || 0;
+				dostawyInputs.forEach((input) => {
+					let inputValue = parseFloat(input.value) || 0;
+					dostawySum += inputValue;
+					let platnosc = input.nextElementSibling.value;
+					if (platnosc === "online") {
+						onlineSGSum += inputValue;
+					}
+				});
 
-    let ko_karty_online = karta_raz + karta_drugie + karta_trzecie + onlineSum;
-    document.getElementById("ko_karty_online").innerText = ko_karty_online.toFixed(2);
+				let utarg = sala + dostawySum + wolt + uber + bolt;
+				document.getElementById("utarg").innerText = utarg.toFixed(2);
 
-    let wydatkiElements = document.querySelectorAll('.wyplaty');
-    let wydatki = 0;
-    wydatkiElements.forEach(element => {
-        wydatki += parseFloat(element.value) || 0;
-    });
-    document.getElementById("wydatki").innerText = wydatki.toFixed(2);
+				document.getElementById("online_sg_wynik").innerText =
+					onlineSGSum.toFixed(2);
+				let onlineSum = bolt + wolt + uber + onlineSGSum;
+				document.getElementById("online_wynik").innerText =
+					onlineSum.toFixed(2);
 
-    let wczoraj_zostalo_sera = parseFloat(document.getElementById("wczoraj_zostalo_sera").value) || 0;
+				let karta_raz =
+					parseFloat(document.getElementById("karta_raz").value) || 0;
+				let karta_drugie =
+					parseFloat(document.getElementById("karta_drugie").value) || 0;
+				let karta_trzecie =
+					parseFloat(document.getElementById("karta_trzecie").value) || 0;
 
-    // Obliczenie ilości sera do zużycia
-    let sera_milosci_zuzyj = Math.floor(utarg / 500) * 0.5;
-    document.getElementById("ser_milosci_zuzyj").innerText = sera_milosci_zuzyj.toFixed(2);
+				let ko_karty_online =
+					karta_raz + karta_drugie + karta_trzecie + onlineSum;
+				document.getElementById("ko_karty_online").innerText =
+					ko_karty_online.toFixed(2);
 
-    let sera_mialo_zostac = wczoraj_zostalo_sera - sera_milosci_zuzyj;
-    document.getElementById("sera_mialo_zostac").innerText = sera_mialo_zostac.toFixed(2);
+				let wydatkiElements = document.querySelectorAll(".wyplaty");
+				let wydatki = 0;
+				wydatkiElements.forEach((element) => {
+					wydatki += parseFloat(element.value) || 0;
+				});
+				document.getElementById("wydatki").innerText = wydatki.toFixed(2);
 
-    let dostawyTotal = dostawySum;
-    document.getElementById("dostawy_sg_wynik").innerText = dostawyTotal.toFixed(2);
+				let wczoraj_zostalo_sera =
+					parseFloat(document.getElementById("wczoraj_zostalo_sera").value) ||
+					0;
 
-    let dostawyWoltBoltUber = dostawySum + wolt + uber + bolt;
-    document.getElementById("wynik_dostawy").innerText = dostawyWoltBoltUber.toFixed(2);
+				// Obliczenie ilości sera do zużycia
+				let sera_milosci_zuzyj = Math.floor(utarg / 500) * 0.5;
+				document.getElementById("ser_milosci_zuzyj").innerText =
+					sera_milosci_zuzyj.toFixed(2);
 
-    let start = parseFloat(document.getElementById("start").value) || 0;
-    let koniec = utarg + start - ko_karty_online - wydatki;
-    document.getElementById("koniec").innerText = koniec.toFixed(2);
-    const komentarze = [
-        "Za mało na komentarz. Ćwicz dalej!",
-        "Trochę lepiej, ale możesz więcej!",
-        "Dobra robota. Idziesz w dobrym kierunku!",
-        "Świetny wynik. Kontynuuj tak!",
-        "Fantastycznie! Jesteś blisko swojego celu!",
-        "Znacznie powyżej oczekiwań. Brawo!",
-        "Nieźle, ale ciut więcej by było idealnie!",
-        "Wydaje się, że idziesz w dobrym kierunku!",
-        "Bardzo dobry wynik. Tak trzymaj!",
-        "Jesteś na dobrej drodze do sukcesu!",
-        "Impresjonujące! Działaj dalej!",
-        "Brawo! Twój trud się opłaca!",
-        "Doskonały wynik. Gratulacje!",
-        "Wspaniały rezultat. Kontynuuj tak!",
-        "Jesteś na najlepszej drodze!",
-        "Bardzo, ale to bardzo dobry wynik!",
-        "Niesamowite wyniki! Tak trzymaj!"
-    ];
+				let sera_mialo_zostac = wczoraj_zostalo_sera - sera_milosci_zuzyj;
+				document.getElementById("sera_mialo_zostac").innerText =
+					sera_mialo_zostac.toFixed(2);
 
-    const komentarzTekst = document.getElementById("komentarzTekst");
-    if (utarg < 2000) {
-        komentarzTekst.textContent = komentarze[0];
-    } else if (utarg >= 2000 && utarg < 2500) {
-        komentarzTekst.textContent = komentarze[1];
-    } else if (utarg >= 2500 && utarg < 3000) {
-        komentarzTekst.textContent = komentarze[2];
-    } else if (utarg >= 3000 && utarg < 3500) {
-        komentarzTekst.textContent = komentarze[3];
-    } else if (utarg >= 3500 && utarg < 4000) {
-        komentarzTekst.textContent = komentarze[4];
-    } else if (utarg >= 4000 && utarg < 4500) {
-        komentarzTekst.textContent = komentarze[5];
-    } else if (utarg >= 4500 && utarg < 5000) {
-        komentarzTekst.textContent = komentarze[6];
-    } else if (utarg >= 5000 && utarg < 5500) {
-        komentarzTekst.textContent = komentarze[7];
-    } else if (utarg >= 5500 && utarg < 6000) {
-        komentarzTekst.textContent = komentarze[8];
-    } else if (utarg >= 6000 && utarg < 6500) {
-        komentarzTekst.textContent = komentarze[9];
-    } else if (utarg >= 6500 && utarg < 7000) {
-        komentarzTekst.textContent = komentarze[10];
-    } else if (utarg >= 7000 && utarg < 7500) {
-        komentarzTekst.textContent = komentarze[11];
-    } else if (utarg >= 7500 && utarg < 8000) {
-        komentarzTekst.textContent = komentarze[12];
-    } else if (utarg >= 8000 && utarg < 8500) {
-        komentarzTekst.textContent = komentarze[13];
-    } else if (utarg >= 8500 && utarg < 9000) {
-        komentarzTekst.textContent = komentarze[14];
-    } else if (utarg >= 9000 && utarg < 9500) {
-        komentarzTekst.textContent = komentarze[15];
-    } else if (utarg >= 9500 && utarg < 10000) {
-        komentarzTekst.textContent = komentarze[16];
-    }
+				let dostawyTotal = dostawySum;
+				document.getElementById("dostawy_sg_wynik").innerText =
+					dostawyTotal.toFixed(2);
 
+				let dostawyWoltBoltUber = dostawySum + wolt + uber + bolt;
+				document.getElementById("wynik_dostawy").innerText =
+					dostawyWoltBoltUber.toFixed(2);
 
-	
+				let start = parseFloat(document.getElementById("start").value) || 0;
+				let koniec = utarg + start - ko_karty_online - wydatki;
+				document.getElementById("koniec").innerText = koniec.toFixed(2);
+				const komentarze = [
+					"Za mało na komentarz. Ćwicz dalej!",
+					"Trochę lepiej, ale możesz więcej!",
+					"Dobra robota. Idziesz w dobrym kierunku!",
+					"Świetny wynik. Kontynuuj tak!",
+					"Fantastycznie! Jesteś blisko swojego celu!",
+					"Znacznie powyżej oczekiwań. Brawo!",
+					"Nieźle, ale ciut więcej by było idealnie!",
+					"Wydaje się, że idziesz w dobrym kierunku!",
+					"Bardzo dobry wynik. Tak trzymaj!",
+					"Jesteś na dobrej drodze do sukcesu!",
+					"Impresjonujące! Działaj dalej!",
+					"Brawo! Twój trud się opłaca!",
+					"Doskonały wynik. Gratulacje!",
+					"Wspaniały rezultat. Kontynuuj tak!",
+					"Jesteś na najlepszej drodze!",
+					"Bardzo, ale to bardzo dobry wynik!",
+					"Niesamowite wyniki! Tak trzymaj!",
+				];
+
+				const komentarzTekst = document.getElementById("komentarzTekst");
+				if (utarg < 2000) {
+					komentarzTekst.textContent = komentarze[0];
+				} else if (utarg >= 2000 && utarg < 2500) {
+					komentarzTekst.textContent = komentarze[1];
+				} else if (utarg >= 2500 && utarg < 3000) {
+					komentarzTekst.textContent = komentarze[2];
+				} else if (utarg >= 3000 && utarg < 3500) {
+					komentarzTekst.textContent = komentarze[3];
+				} else if (utarg >= 3500 && utarg < 4000) {
+					komentarzTekst.textContent = komentarze[4];
+				} else if (utarg >= 4000 && utarg < 4500) {
+					komentarzTekst.textContent = komentarze[5];
+				} else if (utarg >= 4500 && utarg < 5000) {
+					komentarzTekst.textContent = komentarze[6];
+				} else if (utarg >= 5000 && utarg < 5500) {
+					komentarzTekst.textContent = komentarze[7];
+				} else if (utarg >= 5500 && utarg < 6000) {
+					komentarzTekst.textContent = komentarze[8];
+				} else if (utarg >= 6000 && utarg < 6500) {
+					komentarzTekst.textContent = komentarze[9];
+				} else if (utarg >= 6500 && utarg < 7000) {
+					komentarzTekst.textContent = komentarze[10];
+				} else if (utarg >= 7000 && utarg < 7500) {
+					komentarzTekst.textContent = komentarze[11];
+				} else if (utarg >= 7500 && utarg < 8000) {
+					komentarzTekst.textContent = komentarze[12];
+				} else if (utarg >= 8000 && utarg < 8500) {
+					komentarzTekst.textContent = komentarze[13];
+				} else if (utarg >= 8500 && utarg < 9000) {
+					komentarzTekst.textContent = komentarze[14];
+				} else if (utarg >= 9000 && utarg < 9500) {
+					komentarzTekst.textContent = komentarze[15];
+				} else if (utarg >= 9500 && utarg < 10000) {
+					komentarzTekst.textContent = komentarze[16];
+				}
+
 				saveToLocalStorage();
 			}
-	
+
 			window.onload = function () {
 				loadFromLocalStorage();
 			};
-	
-			function addDostawaInput(index) {
-    const dostawyInputsContainer = document.getElementById("dostawy-inputs");
-    const dostawaInput = document.createElement("div");
 
-    dostawaInput.innerHTML = `
+			function addDostawaInput(index) {
+				const dostawyInputsContainer =
+					document.getElementById("dostawy-inputs");
+				const dostawaInput = document.createElement("div");
+
+				dostawaInput.innerHTML = `
         <label for="dostawa${index}">Dostawa ${index}:</label>
-        <input type="number" id="dostawa${index}" class="dostawa-value" oninput="addNextDostawa(${index + 1})" value="${localStorage.getItem(`dostawa${index}`) || ''}" />
+        <input type="number" id="dostawa${index}" class="dostawa-value" oninput="addNextDostawa(${
+					index + 1
+				})" value="${localStorage.getItem(`dostawa${index}`) || ""}" />
         <select id="platnosc${index}" class="dostawa-platnosc">
             <option value="online">Online</option>
             <option value="karta">Kartą</option>
@@ -440,70 +576,73 @@ function oblicz() {
         </select>
     `;
 
-    dostawyInputsContainer.appendChild(dostawaInput);checkNegativeValues(); 
-}
+				dostawyInputsContainer.appendChild(dostawaInput);
+				checkNegativeValues();
+			}
 
-	
 			function toggleAllDostawy() {
-    const dostawyInputsContainer = document.getElementById("dostawy-inputs");
-    const toggleButton = document.getElementById("toggleButton");
+				const dostawyInputsContainer =
+					document.getElementById("dostawy-inputs");
+				const toggleButton = document.getElementById("toggleButton");
 
-    if (dostawyInputsContainer.style.display === "none" || dostawyInputsContainer.style.display === "") {
-        dostawyInputsContainer.style.display = "block";
-        toggleButton.innerText = "Ukryj dostawę";
-        // Dodaj nowe pole do wpisywania dostaw
-        addNextDostawa(dostawyInputsContainer.childElementCount + 1);
-    } else {
-        dostawyInputsContainer.style.display = "none";
-        toggleButton.innerText = "Dodaj dostawę";
-    }
-}
-window.onload = function () {
-    loadFromLocalStorage();
-    addNextDostawa(1); 
-};
+				if (
+					dostawyInputsContainer.style.display === "none" ||
+					dostawyInputsContainer.style.display === ""
+				) {
+					dostawyInputsContainer.style.display = "block";
+					toggleButton.innerText = "Ukryj dostawę";
+					// Dodaj nowe pole do wpisywania dostaw
+					addNextDostawa(dostawyInputsContainer.childElementCount + 1);
+				} else {
+					dostawyInputsContainer.style.display = "none";
+					toggleButton.innerText = "Dodaj dostawę";
+				}
+			}
+			window.onload = function () {
+				loadFromLocalStorage();
+				addNextDostawa(1);
+			};
 
-	
-function addNextDostawa(index) {
-    const lastDostawaInput = document.querySelector('.dostawa-value:last-of-type');
-    if (lastDostawaInput.value.trim() === "") {
-        return; 
-    }
+			function addNextDostawa(index) {
+				const lastDostawaInput = document.querySelector(
+					".dostawa-value:last-of-type"
+				);
+				if (lastDostawaInput.value.trim() === "") {
+					return;
+				}
 
-    const dostawaInput = document.getElementById(`dostawa${index}`);
-    if (!dostawaInput) {
-        addDostawaInput(index);
-    }
-    updateSum();checkNegativeValues();
-}
+				const dostawaInput = document.getElementById(`dostawa${index}`);
+				if (!dostawaInput) {
+					addDostawaInput(index);
+				}
+				updateSum();
+				checkNegativeValues();
+			}
 
 			function updateSum() {
 				const dostawaValues = document.querySelectorAll(".dostawa-value");
 				let sum = 0;
-	
+
 				dostawaValues.forEach((input) => {
 					sum += parseFloat(input.value) || 0;
 				});
-	
+
 				document.getElementById("dostawy").value = sum.toFixed(2);
 			}
-	
+
 			addDostawaInput(1);
 			function checkNegativeValues() {
-    const elements = document.querySelectorAll('.negative-check');
-    elements.forEach(element => {
-        if (parseFloat(element.innerText) < 0) {
-            element.classList.add('negative-value');
-        } else {
-            element.classList.remove('negative-value');
-        }
-    });
-}
+				const elements = document.querySelectorAll(".negative-check");
+				elements.forEach((element) => {
+					if (parseFloat(element.innerText) < 0) {
+						element.classList.add("negative-value");
+					} else {
+						element.classList.remove("negative-value");
+					}
+				});
+			}
 
-
-checkNegativeValues();
-
+			checkNegativeValues();
 		</script>
-		
 	</body>
 </html>

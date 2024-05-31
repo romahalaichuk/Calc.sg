@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Coca-Cola</title>
+		<style>
+			/* Styles z poprzedniej odpowiedzi */
+			body {
+				margin: 0;
+				padding: 0;
+				font-family: Arial, sans-serif;
+				background-image: url("/img/Coca.jpg");
+				background-size: cover;
+				background-position: center;
+				color: #fff;
+			}
+
+			.container {
+				max-width: 800px;
+				margin: 50px auto;
+				padding: 20px;
+				background-color: rgba(0, 0, 0, 0.5);
+				border-radius: 10px;
+				box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+				text-align: center;
+			}
+
+			h1 {
+				font-size: 36px;
+				margin-bottom: 20px;
+			}
+
+			p {
+				font-size: 24px;
+				margin-bottom: 30px;
+			}
+
+			.product-list {
+				text-align: left;
+				margin-bottom: 20px;
+			}
+
+			.product-list-item {
+				font-size: 18px;
+				margin-bottom: 10px;
+			}
+
+			button {
+				padding: 10px 20px;
+				background-color: #4caf50;
+				color: #fff;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+			}
+
+			button:hover {
+				background-color: #45a049;
+			}
+
+			.modal {
+				display: none;
+				position: fixed;
+				z-index: 1;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+				background-color: rgba(0, 0, 0, 0.5);
+			}
+
+			.modal-content {
+				background-color: #502a26ae;
+				margin: 10% auto;
+				padding: 20px;
+				border-radius: 10px;
+				box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+				max-width: 80%;
+				overflow: auto;
+			}
+
+			.close {
+				color: #aaa;
+				float: right;
+				font-size: 28px;
+				font-weight: bold;
+			}
+
+			.close:hover,
+			.close:focus {
+				color: black;
+				text-decoration: none;
+				cursor: pointer;
+			}
+
+			.remove-product-modal {
+				display: inline-block; /* Ustawienie przycisku na tej samej linii */
+				margin-left: 10px; /* Dodanie odstępu między przyciskami */
+				color: #f44336;
+				background-color: transparent;
+				border: none;
+				cursor: pointer;
+				transition: color 0.3s ease;
+			}
+
+			.remove-product-modal:hover {
+				color: #d32f2f;
+			}
+			li {
+				list-style: none;
+				padding: 0;
+				margin-top: 15px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Coca-Cola</h1>
+
+			<div class="product-list">
+				<h2>Product List</h2>
+				<ul id="product-list">
+					<!-- Lista produktów będzie dynamicznie generowana przez JavaScript -->
+				</ul>
+			</div>
+			<button onclick="openModal()">Edytuj listę</button>
+		</div>
+
+		<div id="myModal" class="modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeModal()">&times;</span>
+				<h2>Edit Product List</h2>
+				<input type="text" id="product-name" placeholder="Enter product name" />
+				<button onclick="addProduct()">Add Product</button>
+				<ul id="modal-product-list">
+					<!-- Lista produktów będzie dynamicznie generowana przez JavaScript -->
+				</ul>
+			</div>
+		</div>
+
+		<script>
+			// Funkcja sprawdzająca, czy localStorage jest dostępny
+			function isLocalStorageAvailable() {
+				try {
+					localStorage.setItem("test", "test");
+					localStorage.removeItem("test");
+					return true;
+				} catch (e) {
+					return false;
+				}
+			}
+
+			// Funkcja wczytująca produkty z localStorage
+			function loadProductsFromStorage() {
+				if (isLocalStorageAvailable() && localStorage.getItem("products")) {
+					return JSON.parse(localStorage.getItem("products"));
+				}
+				return [];
+			}
+
+			// Funkcja zapisująca produkty do localStorage
+			function saveProductsToStorage(products) {
+				if (isLocalStorageAvailable()) {
+					localStorage.setItem("products", JSON.stringify(products));
+				}
+			}
+
+			// Wczytanie produktów z localStorage
+			var products = loadProductsFromStorage();
+
+			// Funkcja wyświetlająca produkty
+			function displayProducts() {
+				var productList = document.getElementById("product-list");
+				productList.innerHTML = "";
+				products.forEach(function (product) {
+					var listItem = document.createElement("li");
+					// Usunięcie kropki przed nazwą produktu
+					listItem.textContent = product;
+					productList.appendChild(listItem);
+				});
+			}
+
+			// Wywołanie funkcji wyświetlającej produkty
+			displayProducts();
+
+			function openModal() {
+				var modal = document.getElementById("myModal");
+				modal.style.display = "block";
+				displayModalProducts();
+			}
+
+			function closeModal() {
+				var modal = document.getElementById("myModal");
+				modal.style.display = "none";
+			}
+
+			function addProduct() {
+				var productName = document.getElementById("product-name").value;
+				if (productName.trim() !== "") {
+					products.push(productName);
+					saveProductsToStorage(products);
+					displayProducts();
+					displayModalProducts();
+					document.getElementById("product-name").value = "";
+				}
+			}
+
+			function removeProduct(product) {
+				var index = products.indexOf(product);
+				if (index !== -1) {
+					products.splice(index, 1);
+					saveProductsToStorage(products);
+					displayProducts();
+					displayModalProducts();
+				}
+			}
+
+			function displayModalProducts() {
+				var productListModal = document.getElementById("modal-product-list");
+				productListModal.innerHTML = "";
+				products.forEach(function (product) {
+					var listItemModal = document.createElement("li");
+					listItemModal.textContent = product;
+					var removeButtonModal = document.createElement("button");
+					removeButtonModal.textContent = "Remove";
+					removeButtonModal.className = "remove-product-modal";
+					removeButtonModal.onclick = function () {
+						removeProduct(product);
+					};
+					listItemModal.appendChild(removeButtonModal);
+					productListModal.appendChild(listItemModal);
+				});
+			}
+		</script>
+	</body>
+</html>
