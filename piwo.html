@@ -36,6 +36,21 @@
 
 			.hidden-list-container {
 				display: none;
+				position: relative;
+			}
+
+			.hidden-list-container.show {
+				display: block;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.9);
+				padding: 50px;
+				box-shadow: none;
+				z-index: 1000;
+				overflow-y: auto;
 			}
 
 			#hidden-list-empty {
@@ -116,19 +131,6 @@
 				color: #ffeb3b;
 			}
 
-			.hidden-list-container.show {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background-color: rgba(0, 0, 0, 0.9);
-				padding: 50px;
-				box-shadow: none;
-				z-index: 1000;
-				overflow-y: auto;
-			}
-
 			#copy-button {
 				background-color: #007bff;
 				color: white;
@@ -142,6 +144,17 @@
 
 			#copy-button:hover {
 				background-color: #0056b3;
+			}
+
+			.close-hidden-list {
+				background: none;
+				border: none;
+				color: white;
+				font-size: 24px;
+				cursor: pointer;
+				position: absolute;
+				top: 10px;
+				right: 20px;
 			}
 		</style>
 	</head>
@@ -157,6 +170,7 @@
 				</ul>
 			</div>
 			<div class="hidden-list-container">
+				<button class="close-hidden-list">&times;</button>
 				<h2>Hidden List</h2>
 				<ul id="hidden-list">
 					<!-- Ukryte produkty zostaną wygenerowane przez JavaScript -->
@@ -189,8 +203,10 @@
 				const toggleHiddenListButton =
 					document.getElementById("toggle-hidden-list");
 				const hiddenListEmpty = document.getElementById("hidden-list-empty");
+				const closeHiddenListButton =
+					document.querySelector(".close-hidden-list");
 
-				const products = ["Product 1", "Product 2", "Product 3", "Product 4"];
+				let products = ["Product 1", "Product 2", "Product 3", "Product 4"];
 				let hiddenProducts =
 					JSON.parse(localStorage.getItem("hiddenProducts")) || [];
 				let currentProduct = null;
@@ -202,6 +218,9 @@
 					products.forEach((product, index) => {
 						const li = document.createElement("li");
 						li.textContent = product;
+						li.addEventListener("click", () =>
+							showCommentModal(product, index)
+						);
 						li.addEventListener("touchstart", handleTouchStart, false);
 						li.addEventListener(
 							"touchmove",
@@ -264,6 +283,13 @@
 					hiddenListContainer.classList.toggle("show");
 				};
 
+				const closeHiddenList = () => {
+					const hiddenListContainer = document.querySelector(
+						".hidden-list-container"
+					);
+					hiddenListContainer.classList.remove("show");
+				};
+
 				let xDown = null;
 
 				function handleTouchStart(evt) {
@@ -289,6 +315,7 @@
 				addToHiddenListButton.addEventListener("click", addToHiddenList);
 				copyButton.addEventListener("click", copyHiddenList);
 				toggleHiddenListButton.addEventListener("click", toggleHiddenList);
+				closeHiddenListButton.addEventListener("click", closeHiddenList);
 
 				updateLists();
 			});
