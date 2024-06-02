@@ -148,13 +148,15 @@
 
 			.close-hidden-list {
 				background: none;
-				border: none;
-				color: white;
+				border: 2px solid #ffeb3b;
+				color: #ffeb3b;
 				font-size: 24px;
 				cursor: pointer;
+				padding: 10px;
 				position: absolute;
 				top: 10px;
 				right: 20px;
+				border-radius: 50%;
 			}
 		</style>
 	</head>
@@ -175,7 +177,8 @@
 				<ul id="hidden-list">
 					<!-- Ukryte produkty zostaną wygenerowane przez JavaScript -->
 				</ul>
-				<button id="copy-button">Copy</button>
+				<button id="copy-button">Copy</button
+				><button class="close-hidden-list">&times;</button>
 				<p id="hidden-list-empty">Your hidden list is empty.</p>
 			</div>
 			<button id="toggle-hidden-list" class="toggle-button">Lista</button>
@@ -306,16 +309,40 @@
 
 					if (xDiff > 0) {
 						showCommentModal(product, index);
+					} else if (xDiff < 0) {
+						addToHiddenListBySwipe(product, index);
 					}
 
 					xDown = null;
 				}
+
+				function handleTouchMoveList(evt) {
+					if (!xDown) {
+						return;
+					}
+
+					let xUp = evt.touches[0].clientX;
+					let xDiff = xDown - xUp;
+
+					if (xDiff > 0) {
+						toggleHiddenList();
+					}
+
+					xDown = null;
+				}
+
+				const addToHiddenListBySwipe = (product, index) => {
+					currentProduct = { name: product, index: index };
+					commentModal.style.display = "flex";
+				};
 
 				closeModal.addEventListener("click", hideCommentModal);
 				addToHiddenListButton.addEventListener("click", addToHiddenList);
 				copyButton.addEventListener("click", copyHiddenList);
 				toggleHiddenListButton.addEventListener("click", toggleHiddenList);
 				closeHiddenListButton.addEventListener("click", closeHiddenList);
+				document.addEventListener("touchstart", handleTouchStart, false);
+				document.addEventListener("touchmove", handleTouchMoveList, false);
 
 				updateLists();
 			});
