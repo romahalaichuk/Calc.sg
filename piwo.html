@@ -73,7 +73,7 @@
 				justify-content: space-between;
 				align-items: center;
 				cursor: pointer;
-				transition: background 0.3s;
+				transition: background 0.3s, transform 0.5s;
 				border-radius: 5px;
 			}
 
@@ -219,10 +219,18 @@
 				const closeHiddenListButton =
 					document.querySelector(".close-hidden-list");
 
-				let products = ["Product 1", "Product 2", "Product 3", "Product 4"];
+				let products = [
+					"Książęce złote pszeniczne",
+					"Książęce ipa",
+					"Peroni nastro",
+					"Książęce lagier keg 20 l",
+					"Kozel lezak (jasne)",
+					"Lech Free 0.3",
+				];
 				let hiddenProducts =
 					JSON.parse(localStorage.getItem("hiddenProducts")) || [];
 				let currentProduct = null;
+				let xDown = null;
 
 				const updateLists = () => {
 					productList.innerHTML = "";
@@ -303,8 +311,6 @@
 					hiddenListContainer.classList.remove("show");
 				};
 
-				let xDown = null;
-
 				function handleTouchStart(evt) {
 					xDown = evt.touches[0].clientX;
 				}
@@ -317,10 +323,12 @@
 					let xUp = evt.touches[0].clientX;
 					let xDiff = xDown - xUp;
 
-					if (xDiff > 0) {
-						showCommentModal(product, index);
-					} else if (xDiff < 0) {
-						addToHiddenListBySwipe(product, index);
+					if (Math.abs(xDiff) > 0) {
+						if (xDiff > 0) {
+							showCommentModal(product, index);
+						} else if (xDiff < 0) {
+							animateAndAddToHiddenList(evt.target, product, index);
+						}
 					}
 
 					xDown = null;
@@ -334,18 +342,26 @@
 					let xUp = evt.touches[0].clientX;
 					let xDiff = xDown - xUp;
 
-					if (xDiff > 0) {
-						toggleHiddenList();
-					} else if (xDiff < 0) {
-						closeHiddenList();
+					if (Math.abs(xDiff) > 20) {
+						if (xDiff > 0) {
+							toggleHiddenList();
+						} else if (xDiff < 0) {
+							closeHiddenList();
+						}
 					}
 
 					xDown = null;
 				}
 
-				const addToHiddenListBySwipe = (product, index) => {
-					currentProduct = { name: product, index: index };
-					commentModal.style.display = "flex";
+				const animateAndAddToHiddenList = (element, product, index) => {
+					element.style.transition = "transform 0.7s, opacity 0.7s";
+					element.style.transform = "translateX(100%) rotate(360deg)";
+					element.style.opacity = "0";
+					setTimeout(() => {
+						currentProduct = { name: product, index: index };
+						commentModal.style.display = "flex";
+						element.style.display = "none";
+					}, 700); // Animacja trwająca 0.7 sekundy
 				};
 
 				closeModal.addEventListener("click", hideCommentModal);
