@@ -81,6 +81,20 @@
 				background: rgba(255, 255, 255, 0.2);
 			}
 
+			.remove-button {
+				margin-right: 50px;
+				background-color: #dc3545;
+				color: white;
+				border: none;
+				padding: 5px 10px;
+				cursor: pointer;
+				border-radius: 5px;
+			}
+
+			.remove-button:hover {
+				background-color: #c82333;
+			}
+
 			.toggle-button {
 				position: fixed;
 				top: 50%;
@@ -140,7 +154,17 @@
 				margin: 0;
 				color: #ffeb3b;
 			}
-
+			.back-button {
+				margin-top: 20px;
+				padding: 10px 20px;
+				background-color: #4caf50;
+				color: #fff;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				transition: transform 0.2s ease;
+			}
 			#copy-button {
 				background-color: #007bff;
 				color: white;
@@ -203,6 +227,7 @@
 			function goToIndex() {
 				window.location.href = "index.html";
 			}
+
 			document.addEventListener("DOMContentLoaded", () => {
 				const productList = document.getElementById("product-list");
 				const hiddenList = document.getElementById("hidden-list");
@@ -275,6 +300,13 @@
 					hiddenProducts.forEach(({ name, comment }, index) => {
 						const li = document.createElement("li");
 						li.textContent = `${name}: ${comment}`;
+						const removeButton = document.createElement("button");
+						removeButton.textContent = "Remove";
+						removeButton.className = "remove-button";
+						removeButton.addEventListener("click", () =>
+							removeFromHiddenList(index)
+						);
+						li.appendChild(removeButton);
 						hiddenList.appendChild(li);
 					});
 
@@ -311,6 +343,15 @@
 							updateLists();
 						}, 500);
 					}
+				};
+
+				const removeFromHiddenList = (index) => {
+					hiddenProducts.splice(index, 1);
+					localStorage.setItem(
+						"hiddenProducts",
+						JSON.stringify(hiddenProducts)
+					);
+					updateLists();
 				};
 
 				const copyHiddenList = () => {
