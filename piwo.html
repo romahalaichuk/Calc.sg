@@ -271,10 +271,12 @@
 					commentInput.value = "";
 				};
 
+				// Funkcja obsługująca dodanie produktu do Listy Ukrytych
 				const addToHiddenList = () => {
 					const comment = commentInput.value;
+					const product = currentProduct.name;
 					if (comment.trim()) {
-						hiddenProducts.push({ name: currentProduct.name, comment });
+						hiddenProducts.push({ name: product, comment });
 						products.splice(currentProduct.index, 1);
 						localStorage.setItem(
 							"hiddenProducts",
@@ -282,6 +284,12 @@
 						);
 						updateLists();
 						hideCommentModal();
+					} else {
+						slideRight(productList.children[currentProduct.index]); // Przesunięcie produktu w prawo
+						setTimeout(() => {
+							products.splice(currentProduct.index, 1); // Usunięcie produktu
+							updateLists();
+						}, 500); // Czas opóźnienia (0.5 sekundy)
 					}
 				};
 
