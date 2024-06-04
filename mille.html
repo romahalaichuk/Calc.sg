@@ -193,36 +193,64 @@
 				border-radius: 50%;
 				z-index: 1001;
 			}
+			.orientation-button {
+				position: fixed;
+				bottom: 10px;
+				right: 10px;
+				padding: 10px 20px;
+				background-color: #4caf50;
+				color: #fff;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+			}
+
+			.orientation-button:hover {
+				background-color: #45a049;
+			}
+
+			.rotatable {
+				transition: transform 0.2s ease;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="header">
-			<h1>Mille Produkt Lista</h1>
+			<h1 class="rotatable">Mille Produkt Lista</h1>
 		</div>
-		<div class="main-container">
-			<div class="product-list-container">
-				<h2>Product List</h2>
-				<ul id="product-list"></ul>
+		<div class="main-container rotatable">
+			<div class="product-list-container rotatable">
+				<h2 class="rotatable">Product List</h2>
+				<ul id="product-list" class="rotatable"></ul>
 			</div>
-			<div class="hidden-list-container">
+			<div class="hidden-list-container rotatable">
 				<button class="close-hidden-list">&times;</button>
-				<h2>Hidden List</h2>
-				<ul id="hidden-list"></ul>
-				<button id="copy-button">Copy</button>
-				<p id="hidden-list-empty">Your hidden list is empty.</p>
+				<h2 class="rotatable">Hidden List</h2>
+				<ul id="hidden-list" class="rotatable"></ul>
+				<button id="copy-button" class="rotatable">Copy</button>
+				<p id="hidden-list-empty" class="rotatable">
+					Your hidden list is empty.
+				</p>
 			</div>
-			<button id="toggle-hidden-list" class="toggle-button">Lista</button>
+			<button id="toggle-hidden-list" class="toggle-button rotatable">
+				Lista
+			</button>
 		</div>
 
 		<div id="comment-modal" class="modal">
-			<div class="modal-content">
+			<div class="modal-content rotatable">
 				<span id="close-modal" class="close">&times;</span>
 				<p>Add a comment:</p>
 				<textarea id="comment-input"></textarea>
 				<button id="add-to-hidden-list">Add</button>
 			</div>
 		</div>
-		<button class="back-button" onclick="goToIndex()">Wróć</button>
+		<button class="back-button rotatable" onclick="goToIndex()">Wróć</button>
+		<button class="orientation-button" onclick="toggleOrientation()">
+			Enable Orientation
+		</button>
+
 		<script>
 			function goToIndex() {
 				window.location.href = "index.html";
@@ -277,6 +305,7 @@
 					JSON.parse(localStorage.getItem("hiddenProducts")) || [];
 				let currentProduct = null;
 				let xDown = null;
+				let orientationEnabled = false;
 
 				const updateLists = () => {
 					productList.innerHTML = "";
@@ -365,10 +394,6 @@
 					});
 				};
 
-				copyButton.addEventListener("click", () => {
-					copyHiddenList();
-				});
-
 				const toggleHiddenList = () => {
 					const hiddenListContainer = document.querySelector(
 						".hidden-list-container"
@@ -434,6 +459,33 @@
 						commentModal.style.display = "flex";
 						element.style.display = "none";
 					}, 700);
+				};
+
+				const handleOrientation = (event) => {
+					const { alpha, beta, gamma } = event;
+					const elements = document.querySelectorAll(".rotatable");
+					elements.forEach((element) => {
+						element.style.transform = `rotate(${gamma}deg)`;
+					});
+				};
+
+				const toggleOrientation = () => {
+					orientationEnabled = !orientationEnabled;
+					if (orientationEnabled) {
+						window.addEventListener(
+							"deviceorientation",
+							handleOrientation,
+							true
+						);
+						alert("Orientation enabled");
+					} else {
+						window.removeEventListener(
+							"deviceorientation",
+							handleOrientation,
+							true
+						);
+						alert("Orientation disabled");
+					}
 				};
 
 				closeModal.addEventListener("click", hideCommentModal);
