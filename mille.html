@@ -198,8 +198,11 @@
 				<button id="add-to-hidden-list">Add</button>
 			</div>
 		</div>
-
+		<button class="back-button" onclick="goToIndex()">Wróć</button>
 		<script>
+			function goToIndex() {
+				window.location.href = "index.html";
+			}
 			document.addEventListener("DOMContentLoaded", () => {
 				const productList = document.getElementById("product-list");
 				const hiddenList = document.getElementById("hidden-list");
