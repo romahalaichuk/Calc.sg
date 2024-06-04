@@ -3,9 +3,405 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Mille Sapori</title>
+		<title>Mille</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				margin: 0;
+				padding: 0;
+				background-image: url("./img/pasta.jpg");
+				background-size: cover;
+				background-position: center;
+				background-repeat: no-repeat;
+				color: white;
+			}
+
+			.main-container {
+				display: flex;
+				justify-content: space-between;
+				padding: 20px;
+				background-color: rgba(0, 0, 0, 0.7);
+				border-radius: 10px;
+				margin: 20px;
+			}
+
+			.product-list-container,
+			.hidden-list-container {
+				width: 45%;
+				background-color: rgba(0, 0, 0, 0.8);
+				padding: 20px;
+				border-radius: 10px;
+				box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+			}
+
+			.hidden-list-container {
+				display: none;
+				position: relative;
+			}
+
+			.hidden-list-container.show {
+				display: block;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.9);
+				padding: 50px;
+				box-shadow: none;
+				z-index: 1000;
+				overflow-y: auto;
+			}
+
+			#hidden-list-empty {
+				display: none;
+				color: gray;
+				font-style: italic;
+			}
+
+			ul {
+				list-style: none;
+				padding: 0;
+			}
+
+			li {
+				background: rgba(255, 255, 255, 0.1);
+				margin: 10px 0;
+				padding: 15px;
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				cursor: pointer;
+				transition: background 0.3s, transform 0.5s;
+				border-radius: 5px;
+			}
+
+			li:hover {
+				background: rgba(255, 255, 255, 0.2);
+			}
+
+			.toggle-button {
+				position: fixed;
+				top: 50%;
+				right: 0;
+				transform: translateY(-50%);
+				width: 40px;
+				height: 100%;
+				background-color: rgba(0, 123, 255, 0.7);
+				color: white;
+				cursor: pointer;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: column;
+			}
+
+			.toggle-button::before {
+				content: "←";
+				font-size: 24px;
+				margin-bottom: 10px;
+			}
+
+			.modal {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.5);
+				justify-content: center;
+				align-items: center;
+			}
+
+			.modal-content {
+				background: black;
+				padding: 20px;
+				border-radius: 5px;
+				color: white;
+				box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+			}
+
+			.close {
+				cursor: pointer;
+				float: right;
+				font-size: 20px;
+			}
+
+			.header {
+				text-align: center;
+				margin-bottom: 20px;
+			}
+
+			.header h1 {
+				font-size: 2em;
+				margin: 0;
+				color: #ffeb3b;
+			}
+
+			#copy-button {
+				background-color: #007bff;
+				color: white;
+				padding: 10px;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background 0.3s;
+				margin-top: 20px;
+			}
+
+			#copy-button:hover {
+				background-color: #0056b3;
+			}
+
+			.close-hidden-list {
+				background: none;
+				border: 2px solid #ffeb3b;
+				color: #ffeb3b;
+				font-size: 24px;
+				cursor: pointer;
+				padding: 10px;
+				position: fixed;
+				top: 10px;
+				right: 20px;
+				border-radius: 50%;
+				z-index: 1001;
+			}
+		</style>
 	</head>
 	<body>
-		<p>Mille</p>
+		<div class="header">
+			<h1>Mille Produkt Lista</h1>
+		</div>
+		<div class="main-container">
+			<div class="product-list-container">
+				<h2>Product List</h2>
+				<ul id="product-list"></ul>
+			</div>
+			<div class="hidden-list-container">
+				<button class="close-hidden-list">&times;</button>
+				<h2>Hidden List</h2>
+				<ul id="hidden-list"></ul>
+				<button id="copy-button">Copy</button>
+				<p id="hidden-list-empty">Your hidden list is empty.</p>
+			</div>
+			<button id="toggle-hidden-list" class="toggle-button">Lista</button>
+		</div>
+
+		<div id="comment-modal" class="modal">
+			<div class="modal-content">
+				<span id="close-modal" class="close">&times;</span>
+				<p>Add a comment:</p>
+				<textarea id="comment-input"></textarea>
+				<button id="add-to-hidden-list">Add</button>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const productList = document.getElementById("product-list");
+				const hiddenList = document.getElementById("hidden-list");
+				const commentModal = document.getElementById("comment-modal");
+				const closeModal = document.getElementById("close-modal");
+				const commentInput = document.getElementById("comment-input");
+				const addToHiddenListButton =
+					document.getElementById("add-to-hidden-list");
+				const copyButton = document.getElementById("copy-button");
+				const toggleHiddenListButton =
+					document.getElementById("toggle-hidden-list");
+				const hiddenListEmpty = document.getElementById("hidden-list-empty");
+				const closeHiddenListButton =
+					document.querySelector(".close-hidden-list");
+
+				let products = [
+					"Makaron penne",
+					"Makaron spaghetti",
+					"Makaron tagliatelle",
+					"Salami napoli",
+					"Szynka cotto",
+					"Szynka crudo",
+					"Spianata",
+					"Peperoni",
+					"Parmezan",
+					"Smietanka 30 %",
+					"Bita Smietanka",
+					"Pulpa",
+					"Drożdże",
+					"Oliwa 5L",
+					"Jalapeño",
+					"Oliwki zielone całe",
+					"Oliwki czarne całe",
+					"Kapary",
+					"Tuńczyk",
+					"Frytki",
+					"Szpinak",
+					"Borowiki",
+					"Pieprz czarny mielony",
+					"Gnocchi szpinak",
+					"Ravioli łosoś",
+					"Ravioli bakłażan",
+					"Tortellini z szynką parmeńską",
+					"Ciasto bezowe",
+				];
+				let hiddenProducts =
+					JSON.parse(localStorage.getItem("hiddenProducts")) || [];
+				let currentProduct = null;
+				let xDown = null;
+
+				const updateLists = () => {
+					productList.innerHTML = "";
+					hiddenList.innerHTML = "";
+
+					products.forEach((product, index) => {
+						const li = document.createElement("li");
+						li.textContent = product;
+						li.addEventListener("click", () =>
+							showCommentModal(product, index)
+						);
+						li.addEventListener("touchstart", handleTouchStart, false);
+						li.addEventListener(
+							"touchmove",
+							(evt) => handleTouchMove(evt, product, index),
+							false
+						);
+						productList.appendChild(li);
+					});
+
+					hiddenProducts.forEach(({ name, comment }, index) => {
+						const li = document.createElement("li");
+						li.textContent = `${name}: ${comment}`;
+						hiddenList.appendChild(li);
+					});
+
+					hiddenListEmpty.style.display =
+						hiddenProducts.length === 0 ? "block" : "none";
+				};
+
+				const showCommentModal = (product, index) => {
+					currentProduct = { name: product, index: index };
+					commentModal.style.display = "flex";
+				};
+
+				const hideCommentModal = () => {
+					commentModal.style.display = "none";
+					commentInput.value = "";
+				};
+
+				const addToHiddenList = () => {
+					const comment = commentInput.value;
+					const product = currentProduct.name;
+					if (comment.trim()) {
+						hiddenProducts.push({ name: product, comment });
+						products.splice(currentProduct.index, 1);
+						localStorage.setItem(
+							"hiddenProducts",
+							JSON.stringify(hiddenProducts)
+						);
+						updateLists();
+						hideCommentModal();
+					} else {
+						slideRight(productList.children[currentProduct.index]);
+						setTimeout(() => {
+							products.splice(currentProduct.index, 1);
+							updateLists();
+						}, 500);
+					}
+				};
+
+				const copyHiddenList = () => {
+					const text = hiddenProducts
+						.map(({ name, comment }) => `${name}: ${comment}`)
+						.join(". ");
+					navigator.clipboard.writeText(text).then(() => {
+						hiddenProducts = [];
+						localStorage.removeItem("hiddenProducts");
+						updateLists();
+					});
+				};
+
+				copyButton.addEventListener("click", () => {
+					copyHiddenList();
+				});
+
+				const toggleHiddenList = () => {
+					const hiddenListContainer = document.querySelector(
+						".hidden-list-container"
+					);
+					hiddenListContainer.classList.toggle("show");
+				};
+
+				const closeHiddenList = () => {
+					const hiddenListContainer = document.querySelector(
+						".hidden-list-container"
+					);
+					hiddenListContainer.classList.remove("show");
+				};
+
+				function handleTouchStart(evt) {
+					xDown = evt.touches[0].clientX;
+				}
+
+				function handleTouchMove(evt, product, index) {
+					if (!xDown) {
+						return;
+					}
+
+					let xUp = evt.touches[0].clientX;
+					let xDiff = xDown - xUp;
+
+					if (Math.abs(xDiff) > 0) {
+						if (xDiff > 0) {
+							showCommentModal(product, index);
+						} else if (xDiff < 0) {
+							animateAndAddToHiddenList(evt.target, product, index);
+						}
+					}
+
+					xDown = null;
+				}
+
+				function handleTouchMoveList(evt) {
+					if (!xDown) {
+						return;
+					}
+
+					let xUp = evt.touches[0].clientX;
+					let xDiff = xDown - xUp;
+
+					if (Math.abs(xDiff) > 10) {
+						if (xDiff > 0) {
+							toggleHiddenList();
+						} else if (xDiff < 0) {
+							closeHiddenList();
+						}
+					}
+
+					xDown = null;
+				}
+
+				const animateAndAddToHiddenList = (element, product, index) => {
+					element.style.transition = "transform 0.7s, opacity 0.7s";
+					element.style.transform = "translateX(100%) rotate(360deg)";
+					element.style.opacity = "0";
+					setTimeout(() => {
+						currentProduct = { name: product, index: index };
+						commentModal.style.display = "flex";
+						element.style.display = "none";
+					}, 700);
+				};
+
+				closeModal.addEventListener("click", hideCommentModal);
+				addToHiddenListButton.addEventListener("click", addToHiddenList);
+				copyButton.addEventListener("click", copyHiddenList);
+				toggleHiddenListButton.addEventListener("click", toggleHiddenList);
+				closeHiddenListButton.addEventListener("click", closeHiddenList);
+				document.addEventListener("touchstart", handleTouchStart, false);
+				document.addEventListener("touchmove", handleTouchMoveList, false);
+
+				updateLists();
+			});
+		</script>
 	</body>
 </html>

@@ -81,6 +81,20 @@
 				background: rgba(255, 255, 255, 0.2);
 			}
 
+			.remove-button {
+				margin-right: 50px;
+				background-color: #dc3545;
+				color: white;
+				border: none;
+				padding: 5px 10px;
+				cursor: pointer;
+				border-radius: 5px;
+			}
+
+			.remove-button:hover {
+				background-color: #c82333;
+			}
+
 			.toggle-button {
 				position: fixed;
 				top: 50%;
@@ -140,7 +154,17 @@
 				margin: 0;
 				color: #ffeb3b;
 			}
-
+			.back-button {
+				margin-top: 20px;
+				padding: 10px 20px;
+				background-color: #4caf50;
+				color: #fff;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				transition: transform 0.2s ease;
+			}
 			#copy-button {
 				background-color: #007bff;
 				color: white;
@@ -178,16 +202,12 @@
 		<div class="main-container">
 			<div class="product-list-container">
 				<h2>Product List</h2>
-				<ul id="product-list">
-					<!-- Produkt lista zostanie wygenerowana przez JavaScript -->
-				</ul>
+				<ul id="product-list"></ul>
 			</div>
 			<div class="hidden-list-container">
 				<button class="close-hidden-list">&times;</button>
 				<h2>Hidden List</h2>
-				<ul id="hidden-list">
-					<!-- Ukryte produkty zostaną wygenerowane przez JavaScript -->
-				</ul>
+				<ul id="hidden-list"></ul>
 				<button id="copy-button">Copy</button>
 				<p id="hidden-list-empty">Your hidden list is empty.</p>
 			</div>
@@ -202,8 +222,12 @@
 				<button id="add-to-hidden-list">Add</button>
 			</div>
 		</div>
-
+		<button class="back-button rotatable" onclick="goToIndex()">Wróć</button>
 		<script>
+			function goToIndex() {
+				window.location.href = "index.html";
+			}
+
 			document.addEventListener("DOMContentLoaded", () => {
 				const productList = document.getElementById("product-list");
 				const hiddenList = document.getElementById("hidden-list");
@@ -257,6 +281,13 @@
 					hiddenProducts.forEach(({ name, comment }, index) => {
 						const li = document.createElement("li");
 						li.textContent = `${name}: ${comment}`;
+						const removeButton = document.createElement("button");
+						removeButton.textContent = "Remove";
+						removeButton.className = "remove-button";
+						removeButton.addEventListener("click", () =>
+							removeFromHiddenList(index)
+						);
+						li.appendChild(removeButton);
 						hiddenList.appendChild(li);
 					});
 
@@ -274,7 +305,6 @@
 					commentInput.value = "";
 				};
 
-				// Funkcja obsługująca dodanie produktu do Listy Ukrytych
 				const addToHiddenList = () => {
 					const comment = commentInput.value;
 					const product = currentProduct.name;
@@ -288,15 +318,23 @@
 						updateLists();
 						hideCommentModal();
 					} else {
-						slideRight(productList.children[currentProduct.index]); // Przesunięcie produktu w prawo
+						slideRight(productList.children[currentProduct.index]);
 						setTimeout(() => {
-							products.splice(currentProduct.index, 1); // Usunięcie produktu
+							products.splice(currentProduct.index, 1);
 							updateLists();
-						}, 500); // Czas opóźnienia (0.5 sekundy)
+						}, 500);
 					}
 				};
 
-				// Funkcja obsługująca kopiowanie listy ukrytych produktów
+				const removeFromHiddenList = (index) => {
+					hiddenProducts.splice(index, 1);
+					localStorage.setItem(
+						"hiddenProducts",
+						JSON.stringify(hiddenProducts)
+					);
+					updateLists();
+				};
+
 				const copyHiddenList = () => {
 					const text = hiddenProducts
 						.map(({ name, comment }) => `${name}: ${comment}`)
@@ -308,7 +346,6 @@
 					});
 				};
 
-				// Obsługa kliknięcia przycisku Kopiuj
 				copyButton.addEventListener("click", () => {
 					copyHiddenList();
 				});
@@ -377,7 +414,7 @@
 						currentProduct = { name: product, index: index };
 						commentModal.style.display = "flex";
 						element.style.display = "none";
-					}, 700); // Animacja trwająca 0.7 sekundy
+					}, 700);
 				};
 
 				closeModal.addEventListener("click", hideCommentModal);
