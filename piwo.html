@@ -225,7 +225,10 @@
 					"Peroni nastro",
 					"Książęce lagier keg 20 l",
 					"Kozel lezak (jasne)",
+					"Kozel ciemny",
 					"Lech Free 0.3",
+					"Książęce Ipa 0%",
+					"Książęce złote pszeniczne 0%",
 				];
 				let hiddenProducts =
 					JSON.parse(localStorage.getItem("hiddenProducts")) || [];
@@ -293,17 +296,22 @@
 					}
 				};
 
+				// Funkcja obsługująca kopiowanie listy ukrytych produktów
 				const copyHiddenList = () => {
 					const text = hiddenProducts
 						.map(({ name, comment }) => `${name}: ${comment}`)
 						.join(". ");
 					navigator.clipboard.writeText(text).then(() => {
-						alert("List copied to clipboard!");
 						hiddenProducts = [];
 						localStorage.removeItem("hiddenProducts");
 						updateLists();
 					});
 				};
+
+				// Obsługa kliknięcia przycisku Kopiuj
+				copyButton.addEventListener("click", () => {
+					copyHiddenList();
+				});
 
 				const toggleHiddenList = () => {
 					const hiddenListContainer = document.querySelector(
@@ -350,7 +358,7 @@
 					let xUp = evt.touches[0].clientX;
 					let xDiff = xDown - xUp;
 
-					if (Math.abs(xDiff) > 20) {
+					if (Math.abs(xDiff) > 10) {
 						if (xDiff > 0) {
 							toggleHiddenList();
 						} else if (xDiff < 0) {
