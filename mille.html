@@ -6,14 +6,9 @@
 		<title>Mille</title>
 		<style>
 			body {
-				font-family: Arial, sans-serif;
-				margin: 0;
-				padding: 0;
-				background-image: url("./img/pasta.jpg");
 				background-size: cover;
-				background-position: center;
 				background-repeat: no-repeat;
-				color: white;
+				background-attachment: fixed;
 			}
 
 			.main-container {
@@ -65,6 +60,7 @@
 			}
 
 			li {
+				color: aliceblue;
 				background: rgba(255, 255, 255, 0.1);
 				margin: 10px 0;
 				padding: 15px;
@@ -213,15 +209,35 @@
 			.rotatable {
 				transition: transform 0.2s ease;
 			}
+			.product-list-heading {
+				font-size: 24px;
+				font-weight: bold;
+				text-align: center;
+				padding: 10px;
+				background-color: #f8f9fa;
+				color: #333;
+				border-bottom: 2px solid #ccc;
+				margin-bottom: 20px;
+				animation: floatAnimation 01s infinite alternate;
+			}
+
+			@keyframes floatAnimation {
+				from {
+					transform: translateY(0);
+				}
+				to {
+					transform: translateY(-10px);
+				}
+			}
 		</style>
 	</head>
 	<body>
 		<div class="header">
-			<h1 class="rotatable">Mille Produkt Lista</h1>
+			<h1 id="page-title" class="rotatable">Mille Produkt Lista</h1>
 		</div>
 		<div class="main-container rotatable">
 			<div class="product-list-container rotatable">
-				<h2 class="rotatable">Product List</h2>
+				<h2 class="rotatable product-list-heading">Product List</h2>
 				<ul id="product-list" class="rotatable"></ul>
 			</div>
 			<div class="hidden-list-container rotatable">
@@ -252,26 +268,82 @@
 		</button>
 
 		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const urlParams = new URLSearchParams(window.location.search);
+				const pageIdentifier = urlParams.get("page");
+
+				const pageTitleMap = {
+					piwo: "Piwo Produkt Lista (SMS)",
+					rtm: "RTM Produkt Lista (TEL)",
+					cola: "Cola Produkt Lista (TEL)",
+					makro: "Makro produkt Lista (AP)",
+					mille: "Mille Produkt Lista (SMS)",
+				};
+
+				const pageTitle = document.getElementById("page-title");
+				pageTitle.textContent =
+					pageTitleMap[pageIdentifier] || pageTitleMap["default"];
+			});
+
 			function goToIndex() {
 				window.location.href = "index.html";
 			}
 
-			document.addEventListener("DOMContentLoaded", () => {
-				const productList = document.getElementById("product-list");
-				const hiddenList = document.getElementById("hidden-list");
-				const commentModal = document.getElementById("comment-modal");
-				const closeModal = document.getElementById("close-modal");
-				const commentInput = document.getElementById("comment-input");
-				const addToHiddenListButton =
-					document.getElementById("add-to-hidden-list");
-				const copyButton = document.getElementById("copy-button");
-				const toggleHiddenListButton =
-					document.getElementById("toggle-hidden-list");
-				const hiddenListEmpty = document.getElementById("hidden-list-empty");
-				const closeHiddenListButton =
-					document.querySelector(".close-hidden-list");
-
-				let products = [
+			const urlParams = new URLSearchParams(window.location.search);
+			const pageIdentifier = urlParams.get("page") || "default";
+			const backgroundMap = {
+				piwo: "./img/birra.jpg",
+				rtm: "./img/rr.png",
+				cola: "./img/Coca.jpg",
+				makro: "./img/Makro-e.png",
+				mille: "./img/pasta.jpg",
+			};
+			const productsMap = {
+				piwo: [
+					"Książęce złote pszeniczne",
+					"Książęce ipa",
+					"Peroni nastro",
+					"Książęce lagier keg 20 l",
+					"Kozel lezak (jasne)",
+					"Kozel ciemny",
+					"Lech Free 0.3",
+					"Książęce Ipa 0%",
+					"Książęce złote pszeniczne 0%",
+				],
+				rtm: [
+					"Karton 42",
+					"Karton 32",
+					"Karton 23P",
+					"Podkłady 42",
+					"Podkłady 32",
+					" Podkłady 23",
+					"Karton calzone",
+					"Torby papierowe",
+					"Widelce",
+					" Ręcznik papierowy",
+					"Papier toaletowy",
+					" ZZtki - ręcznik składka",
+					" Pojemniczki na sosy-80m",
+					"Pojemniczki na sosy-30m",
+					"Przykrywki na sosy",
+					"Pojemnik na makaron",
+					"Przykrywki na makaron",
+					" Puchatek na sałatkę",
+					" Worki na śmieci",
+					" Rolki do kasy",
+					"Końcówka do mopa",
+					"Kostki/żele do toalety",
+					" Odświeżać powietrza",
+					" Płyn do szyb 5L-1L",
+					"Płyn do podłóg",
+					" Płyn do naczyń",
+					" Płyn do pieca",
+					" Płyny do zmywarki",
+					" Gąbki",
+				],
+				cola: ["Cola 0.85", "Cola 0.85 0%"],
+				makro: ["Mąka 12-1 kg", "Mąka 12 kg", "Mąka krupczatka 8-1 kg"],
+				mille: [
 					"Makaron penne",
 					"Makaron spaghetti",
 					"Makaron tagliatelle",
@@ -300,12 +372,35 @@
 					"Ravioli bakłażan",
 					"Tortellini z szynką parmeńską",
 					"Ciasto bezowe",
-				];
+				],
+			};
+
+			const background = backgroundMap[pageIdentifier];
+			const products = productsMap[pageIdentifier];
+
+			document.body.style.backgroundImage = `url(${background})`;
+
+			document.addEventListener("DOMContentLoaded", () => {
+				const productList = document.getElementById("product-list");
+				const hiddenList = document.getElementById("hidden-list");
+				const commentModal = document.getElementById("comment-modal");
+				const closeModal = document.getElementById("close-modal");
+				const commentInput = document.getElementById("comment-input");
+				const addToHiddenListButton =
+					document.getElementById("add-to-hidden-list");
+				const copyButton = document.getElementById("copy-button");
+				const toggleHiddenListButton =
+					document.getElementById("toggle-hidden-list");
+				const hiddenListEmpty = document.getElementById("hidden-list-empty");
+				const closeHiddenListButton =
+					document.querySelector(".close-hidden-list");
+
 				let hiddenProducts =
-					JSON.parse(localStorage.getItem("hiddenProducts")) || [];
+					JSON.parse(
+						localStorage.getItem(`hiddenProducts_${pageIdentifier}`)
+					) || [];
 				let currentProduct = null;
 				let xDown = null;
-				let orientationEnabled = false;
 
 				const updateLists = () => {
 					productList.innerHTML = "";
@@ -360,7 +455,7 @@
 						hiddenProducts.push({ name: product, comment });
 						products.splice(currentProduct.index, 1);
 						localStorage.setItem(
-							"hiddenProducts",
+							`hiddenProducts_${pageIdentifier}`,
 							JSON.stringify(hiddenProducts)
 						);
 						updateLists();
@@ -377,7 +472,7 @@
 				const removeFromHiddenList = (index) => {
 					hiddenProducts.splice(index, 1);
 					localStorage.setItem(
-						"hiddenProducts",
+						`hiddenProducts_${pageIdentifier}`,
 						JSON.stringify(hiddenProducts)
 					);
 					updateLists();
@@ -389,10 +484,12 @@
 						.join(". ");
 					navigator.clipboard.writeText(text).then(() => {
 						hiddenProducts = [];
-						localStorage.removeItem("hiddenProducts");
+						localStorage.removeItem(`hiddenProducts_${pageIdentifier}`);
 						updateLists();
 					});
 				};
+
+				copyButton.addEventListener("click", copyHiddenList);
 
 				const toggleHiddenList = () => {
 					const hiddenListContainer = document.querySelector(
@@ -459,33 +556,6 @@
 						commentModal.style.display = "flex";
 						element.style.display = "none";
 					}, 700);
-				};
-
-				const handleOrientation = (event) => {
-					const { alpha, beta, gamma } = event;
-					const elements = document.querySelectorAll(".rotatable");
-					elements.forEach((element) => {
-						element.style.transform = `rotate(${gamma}deg)`;
-					});
-				};
-
-				const toggleOrientation = () => {
-					orientationEnabled = !orientationEnabled;
-					if (orientationEnabled) {
-						window.addEventListener(
-							"deviceorientation",
-							handleOrientation,
-							true
-						);
-						alert("Orientation enabled");
-					} else {
-						window.removeEventListener(
-							"deviceorientation",
-							handleOrientation,
-							true
-						);
-						alert("Orientation disabled");
-					}
 				};
 
 				closeModal.addEventListener("click", hideCommentModal);
