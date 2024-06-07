@@ -566,7 +566,7 @@
 				const copyHiddenList = () => {
 					const text = hiddenProducts
 						.map(({ name, comment }) => `${name}: ${comment}`)
-						.join(". ");
+						.join(".   ");
 					navigator.clipboard.writeText(text).then(() => {
 						hiddenProducts = [];
 						localStorage.removeItem(`hiddenProducts_${pageIdentifier}`);
