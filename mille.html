@@ -162,6 +162,7 @@
 				transition: transform 0.2s ease;
 			}
 			#copy-button {
+				margin-bottom: 150px;
 				background-color: #007bff;
 				color: white;
 				padding: 10px;
@@ -170,6 +171,8 @@
 				cursor: pointer;
 				transition: background 0.3s;
 				margin-top: 20px;
+				position: sticky;
+				bottom: 10px;
 			}
 
 			#copy-button:hover {
@@ -218,7 +221,7 @@
 				color: #333;
 				border-bottom: 2px solid #ccc;
 				margin-bottom: 20px;
-				animation: floatAnimation 01s infinite alternate;
+				animation: floatAnimation 1s infinite alternate;
 			}
 
 			@keyframes floatAnimation {
@@ -650,6 +653,25 @@
 
 				updateLists();
 			});
+			function rotateElements(rotationAngle) {
+				const rotatableElements = document.querySelectorAll(".rotatable");
+				rotatableElements.forEach((element) => {
+					element.style.transform = `rotate(${rotationAngle}deg)`;
+				});
+			}
+
+			function toggleOrientation() {
+				if (window.DeviceOrientationEvent) {
+					window.addEventListener("deviceorientation", handleOrientation);
+				} else {
+					alert("Device orientation is not supported on this device.");
+				}
+			}
+
+			function handleOrientation(event) {
+				const alpha = event.alpha;
+				rotateElements(alpha);
+			}
 		</script>
 	</body>
 </html>
