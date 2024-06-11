@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Rozliczenie</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				background-color: #f4f4f4;
+				margin: 0;
+				padding: 20px;
+			}
+			h1,
+			h2 {
+				color: #333;
+			}
+			.container {
+				background-color: #fff;
+				border-radius: 8px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				margin-bottom: 20px;
+				padding: 20px;
+			}
+			.input-group {
+				margin-bottom: 10px;
+			}
+			.input-group input {
+				width: 100%;
+				padding: 8px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				box-sizing: border-box;
+				display: none; /* Domyślnie ukryte */
+			}
+			button {
+				background-color: #007bff;
+				color: white;
+				padding: 10px 20px;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: #0056b3;
+			}
+			.results {
+				margin-top: 20px;
+			}
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.3/dist/tesseract.min.js"></script>
+	</head>
+	<body>
+		<h1>Rozliczenie</h1>
+
+		<div class="container">
+			<h2>Inputy Utarg</h2>
+			<div id="utarg-container"></div>
+			<button onclick="addUtargInput()">Dodaj Utarg</button>
+			<button onclick="openCamera('utarg')">Skanuj Utarg</button>
+		</div>
+
+		<div class="container">
+			<h2>Zakupy Mille</h2>
+			<div id="mille-container"></div>
+			<button onclick="addMilleInput()">Dodaj Mille</button>
+			<button onclick="openCamera('mille')">Skanuj Mille</button>
+		</div>
+
+		<div class="container">
+			<h2>Zakupy Makro</h2>
+			<div id="makro-container"></div>
+			<button onclick="addMakroInput()">Dodaj Makro</button>
+			<button onclick="openCamera('makro')">Skanuj Makro</button>
+		</div>
+
+		<div class="container">
+			<h2>Inne Faktury</h2>
+			<div id="inne-container"></div>
+			<button onclick="addInneInput()">Dodaj Inne Faktury</button>
+			<button onclick="openCamera('inne')">Skanuj Inne Faktury</button>
+		</div>
+
+		<div class="container results">
+			<h2>Wyniki</h2>
+			<p>Łączny utarg: <span id="total-utarg"></span> zł</p>
+			<p>Zakupy Mille: <span id="total-mille"></span> zł</p>
+			<p>Zakupy Makro: <span id="total-makro"></span> zł</p>
+			<p>Łączna kwota Mille i Makro: <span id="total-mille-makro"></span> zł</p>
+			<p>
+				% zakupów (Mille i Makro do Utargu): <span id="percent-zakupy"></span>%
+			</p>
+			<p>Wszystkie łącznie faktury: <span id="total-invoices"></span> zł</p>
+			<p>% wszystkich faktur do utargu: <span id="percent-invoices"></span>%</p>
+		</div>
+
+		<button onclick="clearData()">Wyczyść dane</button>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				loadInputs();
+				calculateResults();
+			});
+
+			function loadInputs() {
+				loadInputGroup("utarg", 32, addUtargInput);
+				loadInputGroup("mille", 20, addMilleInput);
+				loadInputGroup("makro", 20, addMakroInput);
+				loadInputGroup("inne", 20, addInneInput);
+			}
+
+			function loadInputGroup(type, count, addInputFunction) {
+				let hasVisibleInput = false;
+				for (let i = 0; i < count; i++) {
+					addInputFunction("");
+				}
+				loadStoredValues(type);
+
+				// Pokaż tylko pierwszy input, jeśli żaden nie jest wypełniony
+				const inputs = document.querySelectorAll(`.${type}`);
+				inputs.forEach((input) => {
+					if (input.value !== "") {
+						input.style.display = "block";
+						hasVisibleInput = true;
+					}
+				});
+
+				if (!hasVisibleInput && inputs.length > 0) {
+					inputs[0].style.display = "block";
+				}
+			}
+
+			function loadStoredValues(type) {
+				const inputs = document.querySelectorAll(`.${type}`);
+				let lastFilledIndex = -1;
+				inputs.forEach((input, index) => {
+					const value = localStorage.getItem(`${type}-${index}`);
+					if (value !== null && value !== "") {
+						input.value = value;
+						input.style.display = "block"; // Show input if it has a value
+						lastFilledIndex = index;
+					}
+				});
+				if (lastFilledIndex + 1 < inputs.length) {
+					inputs[lastFilledIndex + 1].style.display = "block";
+				}
+			}
+
+			function addUtargInput(value = "") {
+				addInput("utarg-container", "utarg", value, true);
+			}
+
+			function addMilleInput(value = "") {
+				addInput("mille-container", "mille", value, true);
+			}
+
+			function addMakroInput(value = "") {
+				addInput("makro-container", "makro", value, true);
+			}
+
+			function addInneInput(value = "") {
+				addInput("inne-container", "inne", value, true);
+			}
+
+			function addInput(containerId, type, value = "", initial = false) {
+				const container = document.getElementById(containerId);
+				const inputGroup = document.createElement("div");
+				inputGroup.classList.add("input-group");
+
+				const input = document.createElement("input");
+				input.type = "number";
+				input.classList.add(type);
+				input.placeholder = `Wpisz kwotę ${type}`;
+				input.style.display = initial ? "block" : "none";
+				input.value = value;
+				input.addEventListener("input", () => {
+					saveInputValues(type);
+					calculateResults();
+					showNextInput(type);
+				});
+
+				inputGroup.appendChild(input);
+				container.appendChild(inputGroup);
+
+				if (value !== "") {
+					input.style.display = "block";
+				}
+			}
+
+			function saveInputValues(type) {
+				const inputs = document.querySelectorAll(`.${type}`);
+				inputs.forEach((input, index) => {
+					localStorage.setItem(`${type}-${index}`, input.value);
+				});
+			}
+
+			function showNextInput(type) {
+				const inputs = document.querySelectorAll(`.${type}`);
+				for (let i = 0; i < inputs.length; i++) {
+					if (inputs[i].value === "") {
+						inputs[i].style.display = "block";
+						break;
+					}
+				}
+			}
+
+			function openCamera(type) {
+				const video = document.createElement("video");
+				const canvas = document.createElement("canvas");
+				const context = canvas.getContext("2d");
+
+				const handleSuccess = (stream) => {
+					video.srcObject = stream;
+					video.play();
+
+					document.body.appendChild(video);
+					document.body.appendChild(canvas);
+
+					video.addEventListener("click", () => {
+						context.drawImage(video, 0, 0, canvas.width, canvas.height);
+						video.pause();
+						stream.getTracks().forEach((track) => track.stop());
+
+						Tesseract.recognize(canvas.toDataURL("image/png"), "eng", {
+							logger: (m) => console.log(m),
+						}).then(({ data: { text } }) => {
+							const numericText = text.match(/\d+/g);
+							if (numericText) {
+								numericText.forEach((num) => {
+									addInput(type + "-container", type, num);
+								});
+							}
+							document.body.removeChild(video);
+							document.body.removeChild(canvas);
+						});
+					});
+				};
+
+				navigator.mediaDevices
+					.getUserMedia({ video: true })
+					.then(handleSuccess);
+			}
+
+			function calculateResults() {
+				const totalUtarg = calculateTotal("utarg");
+				const totalMille = calculateTotal("mille");
+				const totalMakro = calculateTotal("makro");
+				const totalMilleMakro = totalMille + totalMakro;
+				const totalInvoices = totalMille + totalMakro + calculateTotal("inne");
+
+				const percentZakupy =
+					totalUtarg > 0
+						? ((totalMilleMakro / totalUtarg) * 100).toFixed(2)
+						: 0;
+				const percentInvoices =
+					totalUtarg > 0 ? ((totalInvoices / totalUtarg) * 100).toFixed(2) : 0;
+
+				document.getElementById("total-utarg").innerText = totalUtarg;
+				document.getElementById("total-mille").innerText = totalMille;
+				document.getElementById("total-makro").innerText = totalMakro;
+				document.getElementById("total-mille-makro").innerText =
+					totalMilleMakro;
+				document.getElementById("percent-zakupy").innerText = percentZakupy;
+				document.getElementById("total-invoices").innerText = totalInvoices;
+				document.getElementById("percent-invoices").innerText = percentInvoices;
+			}
+
+			function calculateTotal(type) {
+				const inputs = document.querySelectorAll(`.${type}`);
+				let total = 0;
+				inputs.forEach((input) => {
+					total += parseFloat(input.value) || 0;
+				});
+				return total;
+			}
+
+			function clearData() {
+				localStorage.clear();
+				location.reload();
+			}
+		</script>
+	</body>
+</html>
