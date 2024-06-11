@@ -94,20 +94,20 @@
 		<h1>Rozliczenie</h1>
 
 		<div class="container">
-			<h2>Utarg</h2>
+			<h2>Utargi</h2>
 			<div id="utarg-container"></div>
 			<button onclick="toggleInputs('utarg')" data-type="utarg">Rozwiń</button>
 		</div>
 
 		<div class="container">
-			<h2>Zakupy Mille</h2>
+			<h2>Faktury Mille</h2>
 			<div id="mille-container"></div>
 			<button onclick="toggleInputs('mille')" data-type="mille">Rozwiń</button>
 			<button onclick="openCamera('mille')">Skanuj Mille</button>
 		</div>
 
 		<div class="container">
-			<h2>Zakupy Makro</h2>
+			<h2>Faktury Makro</h2>
 			<div id="makro-container"></div>
 			<button onclick="toggleInputs('makro')" data-type="makro">Rozwiń</button>
 			<button onclick="openCamera('makro')">Skanuj Makro</button>
@@ -149,7 +149,7 @@
 			}
 			document.addEventListener("DOMContentLoaded", function () {
 				loadInputs();
-				calculateResults(); // Dodaj to wywołanie funkcji calculateResults()
+				calculateResults();
 				loadStoredValues("utarg");
 				loadStoredValues("mille");
 				loadStoredValues("makro");
