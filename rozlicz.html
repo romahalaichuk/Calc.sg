@@ -7,16 +7,16 @@
 		<style>
 			body {
 				font-family: Arial, sans-serif;
-				background-color: #f4f4f4;
+				background-image: url(./img/rozlicz.jpg);
 				margin: 0;
 				padding: 20px;
 			}
 			h1,
 			h2 {
-				color: #333;
+				color: #d2b8b8;
 			}
 			.container {
-				background-color: #fff;
+				background-color: rgba(0, 0, 0, 0.8);
 				border-radius: 8px;
 				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 				margin-bottom: 20px;
@@ -28,11 +28,15 @@
 			.input-group input {
 				width: 100%;
 				padding: 8px;
-				border: 1px solid #ccc;
+				border: 1px solid #575555d8;
 				border-radius: 4px;
 				box-sizing: border-box;
-				display: none; /* Domyślnie ukryte */
+				display: none;
 			}
+			input[type="number"] {
+				display: none;
+			}
+
 			button {
 				background-color: #007bff;
 				color: white;
@@ -56,28 +60,30 @@
 		<div class="container">
 			<h2>Inputy Utarg</h2>
 			<div id="utarg-container"></div>
-			<button onclick="addUtargInput()">Dodaj Utarg</button>
+			<button onclick="toggleInputs('utarg')" data-type="utarg">Rozwiń</button>
 			<button onclick="openCamera('utarg')">Skanuj Utarg</button>
 		</div>
 
 		<div class="container">
 			<h2>Zakupy Mille</h2>
 			<div id="mille-container"></div>
-			<button onclick="addMilleInput()">Dodaj Mille</button>
+			<button onclick="toggleInputs('mille')" data-type="mille">Rozwiń</button>
 			<button onclick="openCamera('mille')">Skanuj Mille</button>
 		</div>
 
 		<div class="container">
 			<h2>Zakupy Makro</h2>
 			<div id="makro-container"></div>
-			<button onclick="addMakroInput()">Dodaj Makro</button>
+			<button onclick="toggleInputs('makro')" data-type="makro">Rozwiń</button>
 			<button onclick="openCamera('makro')">Skanuj Makro</button>
 		</div>
 
 		<div class="container">
 			<h2>Inne Faktury</h2>
 			<div id="inne-container"></div>
-			<button onclick="addInneInput()">Dodaj Inne Faktury</button>
+			<button onclick="toggleInputs('inne')" data-type="inne">
+				Rozwiń Inne
+			</button>
 			<button onclick="openCamera('inne')">Skanuj Inne Faktury</button>
 		</div>
 
@@ -100,6 +106,10 @@
 			document.addEventListener("DOMContentLoaded", function () {
 				loadInputs();
 				calculateResults();
+				loadStoredValues("utarg");
+				loadStoredValues("mille");
+				loadStoredValues("makro");
+				loadStoredValues("inne");
 			});
 
 			function loadInputs() {
@@ -110,23 +120,36 @@
 			}
 
 			function loadInputGroup(type, count, addInputFunction) {
-				let hasVisibleInput = false;
 				for (let i = 0; i < count; i++) {
 					addInputFunction("");
 				}
-				loadStoredValues(type);
+				hideInputs(type);
+			}
 
-				// Pokaż tylko pierwszy input, jeśli żaden nie jest wypełniony
+			function hideInputs(type) {
 				const inputs = document.querySelectorAll(`.${type}`);
 				inputs.forEach((input) => {
-					if (input.value !== "") {
-						input.style.display = "block";
-						hasVisibleInput = true;
-					}
+					input.style.display = "none";
 				});
+				const button = document.querySelector(`button[data-type="${type}"]`);
+				button.textContent = "Rozwiń";
+			}
 
-				if (!hasVisibleInput && inputs.length > 0) {
-					inputs[0].style.display = "block";
+			function toggleInputs(type) {
+				const inputs = document.querySelectorAll(`.${type}`);
+				const button = document.querySelector(`button[data-type="${type}"]`);
+				const firstInput = inputs[0];
+
+				if (firstInput.style.display === "none") {
+					inputs.forEach((input) => {
+						input.style.display = "block";
+					});
+					button.textContent = "Ukryj";
+				} else {
+					inputs.forEach((input) => {
+						input.style.display = "none";
+					});
+					button.textContent = "Rozwiń";
 				}
 			}
 
@@ -137,7 +160,7 @@
 					const value = localStorage.getItem(`${type}-${index}`);
 					if (value !== null && value !== "") {
 						input.value = value;
-						input.style.display = "block"; // Show input if it has a value
+						input.style.display = "block";
 						lastFilledIndex = index;
 					}
 				});
@@ -167,23 +190,23 @@
 				const inputGroup = document.createElement("div");
 				inputGroup.classList.add("input-group");
 
-				const input = document.createElement("input");
-				input.type = "number";
-				input.classList.add(type);
-				input.placeholder = `Wpisz kwotę ${type}`;
-				input.style.display = initial ? "block" : "none";
-				input.value = value;
-				input.addEventListener("input", () => {
+				const inputElement = document.createElement("input");
+				inputElement.type = "number";
+				inputElement.classList.add(type);
+				inputElement.placeholder = `Wpisz kwotę ${type}`;
+				inputElement.style.display = initial ? "block" : "none";
+				inputElement.value = value;
+				inputElement.addEventListener("input", () => {
 					saveInputValues(type);
 					calculateResults();
 					showNextInput(type);
 				});
 
-				inputGroup.appendChild(input);
+				inputGroup.appendChild(inputElement);
 				container.appendChild(inputGroup);
 
 				if (value !== "") {
-					input.style.display = "block";
+					inputElement.style.display = "block";
 				}
 			}
 
@@ -202,43 +225,6 @@
 						break;
 					}
 				}
-			}
-
-			function openCamera(type) {
-				const video = document.createElement("video");
-				const canvas = document.createElement("canvas");
-				const context = canvas.getContext("2d");
-
-				const handleSuccess = (stream) => {
-					video.srcObject = stream;
-					video.play();
-
-					document.body.appendChild(video);
-					document.body.appendChild(canvas);
-
-					video.addEventListener("click", () => {
-						context.drawImage(video, 0, 0, canvas.width, canvas.height);
-						video.pause();
-						stream.getTracks().forEach((track) => track.stop());
-
-						Tesseract.recognize(canvas.toDataURL("image/png"), "eng", {
-							logger: (m) => console.log(m),
-						}).then(({ data: { text } }) => {
-							const numericText = text.match(/\d+/g);
-							if (numericText) {
-								numericText.forEach((num) => {
-									addInput(type + "-container", type, num);
-								});
-							}
-							document.body.removeChild(video);
-							document.body.removeChild(canvas);
-						});
-					});
-				};
-
-				navigator.mediaDevices
-					.getUserMedia({ video: true })
-					.then(handleSuccess);
 			}
 
 			function calculateResults() {
@@ -277,6 +263,42 @@
 			function clearData() {
 				localStorage.clear();
 				location.reload();
+			}
+			function openCamera(type) {
+				const video = document.createElement("video");
+				const canvas = document.createElement("canvas");
+				const context = canvas.getContext("2d");
+
+				const handleSuccess = (stream) => {
+					video.srcObject = stream;
+					video.play();
+
+					document.body.appendChild(video);
+					document.body.appendChild(canvas);
+
+					video.addEventListener("click", () => {
+						context.drawImage(video, 0, 0, canvas.width, canvas.height);
+						video.pause();
+						stream.getTracks().forEach((track) => track.stop());
+
+						Tesseract.recognize(canvas.toDataURL("image/png"), "eng", {
+							logger: (m) => console.log(m),
+						}).then(({ data: { text } }) => {
+							const numericText = text.match(/\d+/g);
+							if (numericText) {
+								numericText.forEach((num) => {
+									addInput(type + "-container", type, num);
+								});
+							}
+							document.body.removeChild(video);
+							document.body.removeChild(canvas);
+						});
+					});
+				};
+
+				navigator.mediaDevices
+					.getUserMedia({ video: true })
+					.then(handleSuccess);
 			}
 		</script>
 	</body>
