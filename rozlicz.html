@@ -238,9 +238,9 @@
 				inputElement.type = "number";
 				inputElement.classList.add(type);
 				inputElement.placeholder = `Wpisz kwotę ${type}`;
-				inputElement.style.display = initial ? "block" : "none";
 				inputElement.value = value;
-				inputElement.addEventListener("input", () => {
+
+				inputElement.addEventListener("input", function () {
 					saveInputValues(type);
 					calculateResults();
 					showNextInput(type);
@@ -249,15 +249,11 @@
 				inputGroup.appendChild(inputElement);
 				container.appendChild(inputGroup);
 
-				if (value !== "") {
-					inputElement.style.display = "block";
+				if (!initial) {
+					const inputs = container.querySelectorAll(`input.${type}`);
+					const lastInput = inputs[inputs.length - 1];
+					lastInput.focus();
 				}
-			}
-			function saveInputValues(type) {
-				const inputs = document.querySelectorAll(`.${type}`);
-				inputs.forEach((input, index) => {
-					localStorage.setItem(`${type}-${index}`, input.value);
-				});
 			}
 
 			function showNextInput(type) {
@@ -270,35 +266,50 @@
 				}
 			}
 
+			function saveInputValues(type) {
+				const inputs = document.querySelectorAll(`.${type}`);
+				inputs.forEach((input, index) => {
+					localStorage.setItem(`${type}-${index}`, input.value);
+				});
+			}
+
 			function calculateResults() {
 				const totalUtarg = calculateTotal("utarg");
 				const totalMille = calculateTotal("mille");
 				const totalMakro = calculateTotal("makro");
-				const totalMilleMakro = totalMille + totalMakro;
 				const totalInvoices = totalMille + totalMakro + calculateTotal("inne");
+				const percentZakupy = totalUtarg
+					? ((totalMille + totalMakro) / totalUtarg) * 100
+					: 0;
+				const percentInvoices = totalUtarg
+					? (totalInvoices / totalUtarg) * 100
+					: 0;
 
-				const percentZakupy =
-					totalUtarg > 0
-						? ((totalMilleMakro / totalUtarg) * 100).toFixed(2)
-						: 0;
-				const percentInvoices =
-					totalUtarg > 0 ? ((totalInvoices / totalUtarg) * 100).toFixed(2) : 0;
-
-				document.getElementById("total-utarg").innerText = totalUtarg;
-				document.getElementById("total-mille").innerText = totalMille;
-				document.getElementById("total-makro").innerText = totalMakro;
-				document.getElementById("total-mille-makro").innerText =
-					totalMilleMakro;
-				document.getElementById("percent-zakupy").innerText = percentZakupy;
-				document.getElementById("total-invoices").innerText = totalInvoices;
-				document.getElementById("percent-invoices").innerText = percentInvoices;
+				document.getElementById("total-utarg").textContent =
+					totalUtarg.toFixed(2);
+				document.getElementById("total-mille").textContent =
+					totalMille.toFixed(2);
+				document.getElementById("total-makro").textContent =
+					totalMakro.toFixed(2);
+				document.getElementById("total-mille-makro").textContent = (
+					totalMille + totalMakro
+				).toFixed(2);
+				document.getElementById("percent-zakupy").textContent =
+					percentZakupy.toFixed(2);
+				document.getElementById("total-invoices").textContent =
+					totalInvoices.toFixed(2);
+				document.getElementById("percent-invoices").textContent =
+					percentInvoices.toFixed(2);
 			}
 
 			function calculateTotal(type) {
 				const inputs = document.querySelectorAll(`.${type}`);
 				let total = 0;
 				inputs.forEach((input) => {
-					total += parseFloat(input.value) || 0;
+					const value = parseFloat(input.value);
+					if (!isNaN(value)) {
+						total += value;
+					}
 				});
 				return total;
 			}
@@ -314,7 +325,7 @@
 				video.id = "camera";
 				video.autoplay = true;
 				video.style.width = "100%";
-				video.style.maxWidth = "640px";
+				video.style.maxWidth = "400px";
 				video.style.border = "5px solid #fff";
 				video.style.borderRadius = "8px";
 				video.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.2)";
@@ -363,11 +374,26 @@
 					});
 				};
 
+				const constraints = {
+					video: {
+						facingMode: { exact: "environment" },
+					},
+				};
+
 				navigator.mediaDevices
-					.getUserMedia({ video: true })
+					.getUserMedia(constraints)
 					.then(handleSuccess)
 					.catch((err) => {
 						console.error("Error accessing camera: ", err);
+						const fallbackConstraints = {
+							video: true,
+						};
+						navigator.mediaDevices
+							.getUserMedia(fallbackConstraints)
+							.then(handleSuccess)
+							.catch((err) => {
+								console.error("Error accessing any camera: ", err);
+							});
 					});
 			}
 		</script>
