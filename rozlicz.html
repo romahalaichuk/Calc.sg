@@ -39,6 +39,9 @@
 			input[type="number"] {
 				display: none;
 			}
+			.clea {
+				margin-left: 300px;
+			}
 			button {
 				background-color: #007bff;
 				color: white;
@@ -135,14 +138,13 @@
 			<p>% wszystkich faktur do utargu: <span id="percent-invoices"></span>%</p>
 		</div>
 
-		<button onclick="clearData()">Wyczyść dane</button>
-		<button class="back-button rotatable" onclick="goToIndex()">Wróć</button>
+		<button class="back-button rotatable" onclick="goToIndex()">Wróć</button
+		><button class="clea" onclick="clearData()">Wyczyść dane</button>
 
 		<div id="camera-container" style="display: none">
 			<video id="camera" autoplay></video>
 			<div class="scan-line"></div>
 		</div>
-
 		<script>
 			function goToIndex() {
 				window.location.href = "index.html";
@@ -315,7 +317,12 @@
 			}
 
 			function clearData() {
-				localStorage.clear();
+				const types = ["utarg", "mille", "makro", "inne"];
+				types.forEach((type) => {
+					for (let i = 0; localStorage.getItem(`${type}-${i}`) !== null; i++) {
+						localStorage.removeItem(`${type}-${i}`);
+					}
+				});
 				location.reload();
 			}
 

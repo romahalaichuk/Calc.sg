@@ -317,7 +317,7 @@
 				</p>
 
 				<p class="komentarz" id="komentarzTekst"></p>
-				<button onclick="clearStorage()">Wyczyść dane</button>
+				<button onclick="clearFormData()">Wyczyść dane</button>
 			</div>
 		</div>
 
@@ -376,9 +376,18 @@
 				oblicz();
 			}
 
-			function clearStorage() {
-				localStorage.clear();
-				location.reload();
+			function clearFormData() {
+				const inputs = document.querySelectorAll('input[type="number"]');
+				inputs.forEach((input) => {
+					localStorage.removeItem(input.id);
+				});
+
+				const dostawaValues = document.querySelectorAll(".dostawa-value");
+				dostawaValues.forEach((dostawa, index) => {
+					localStorage.removeItem(`dostawa${index + 1}`);
+				});
+
+				location.reload(); // Opcjonalnie, aby odświeżyć stronę po wyczyszczeniu danych
 			}
 
 			function pokazKarty() {
