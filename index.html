@@ -317,7 +317,8 @@
 				</p>
 
 				<p class="komentarz" id="komentarzTekst"></p>
-				<button onclick="clearFormData()">Wyczyść dane</button>
+				<button onclick="clearFormData()">Wyczyść dane</button
+				><span id="clearMessage"></span>
 			</div>
 		</div>
 
@@ -387,7 +388,21 @@
 					localStorage.removeItem(`dostawa${index + 1}`);
 				});
 
-				location.reload(); // Opcjonalnie, aby odświeżyć stronę po wyczyszczeniu danych
+				// Dodaj komunikat o udanym wyczyszczeniu danych
+				const messageContainer = document.getElementById("clearMessage");
+				if (messageContainer) {
+					messageContainer.textContent = "Dane zostały pomyślnie wyczyszczone.";
+				}
+
+				// Opcjonalnie, możesz odświeżyć stronę
+				// location.reload();
+
+				// Możesz również ukryć komunikat po kilku sekundach
+				setTimeout(() => {
+					if (messageContainer) {
+						messageContainer.textContent = "";
+					}
+				}, 3000); // Komunikat zostanie ukryty po 3 sekundach (3000 milisekund)
 			}
 
 			function pokazKarty() {
