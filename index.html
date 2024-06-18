@@ -127,32 +127,6 @@
 				font-weight: bold;
 				animation: pulse 1s infinite alternate;
 			}
-			#custom-keyboard {
-				display: none;
-				position: absolute;
-				bottom: 10px;
-				left: 10px;
-				display: grid;
-				grid-template-columns: repeat(3, 1fr);
-				gap: 5px;
-				padding: 10px;
-				background-color: #f0f0f0;
-				border: 1px solid #ccc;
-				border-radius: 5px;
-			}
-
-			.keyboard-key {
-				padding: 10px;
-				font-size: 18px;
-				background-color: #fff;
-				border: 1px solid #ccc;
-				border-radius: 5px;
-				cursor: pointer;
-			}
-
-			.keyboard-key:hover {
-				background-color: #e0e0e0;
-			}
 		</style>
 	</head>
 	<body>
@@ -170,9 +144,6 @@
 			</div>
 			<div class="content">
 				<h1>Kalkulator</h1>
-				<input type="text" id="input-field" />
-				<div id="custom-keyboard"></div>
-
 				<label for="dostawy">Dostawy SG:</label
 				><button onclick="oblicz()">Oblicz</button>
 				<input
@@ -351,66 +322,6 @@
 		</div>
 
 		<script>
-			// Pobierz referencje do pola input i klawiatury
-			const inputField = document.getElementById("input-field");
-			const customKeyboard = document.getElementById("custom-keyboard");
-
-			// Funkcja do dodania klawiatury
-			function addKeyboard() {
-				// Usuń istniejące przyciski klawiatury
-				customKeyboard.innerHTML = "";
-
-				// Lista przycisków na klawiaturze
-				const keyboardButtons = [
-					{ label: "1", action: () => addToInput("1") },
-					{ label: "2", action: () => addToInput("2") },
-					{ label: "3", action: () => addToInput("3") },
-					{ label: "4", action: () => addToInput("4") },
-					{ label: "5", action: () => addToInput("5") },
-					{ label: "6", action: () => addToInput("6") },
-					{ label: "7", action: () => addToInput("7") },
-					{ label: "8", action: () => addToInput("8") },
-					{ label: "9", action: () => addToInput("9") },
-					{ label: "0", action: () => addToInput("0") },
-					{ label: "C", action: clearInput },
-				];
-
-				// Utwórz przyciski klawiatury i dodaj je do kontenera
-				keyboardButtons.forEach((button) => {
-					const btn = document.createElement("button");
-					btn.textContent = button.label;
-					btn.classList.add("keyboard-key");
-					btn.addEventListener("click", button.action);
-					customKeyboard.appendChild(btn);
-				});
-
-				// Pokaż klawiaturę
-				customKeyboard.style.display = "grid";
-			}
-
-			// Funkcja do dodawania tekstu do pola input
-			function addToInput(value) {
-				inputField.value += value;
-			}
-
-			// Funkcja do czyszczenia pola input
-			function clearInput() {
-				inputField.value = "";
-			}
-
-			// Nasłuchuj kliknięcia w pole input
-			inputField.addEventListener("click", addKeyboard);
-
-			// Ukryj klawiaturę, jeśli klikniesz gdzie indziej na stronie
-			document.addEventListener("click", function (event) {
-				if (
-					!customKeyboard.contains(event.target) &&
-					event.target !== inputField
-				) {
-					customKeyboard.style.display = "none";
-				}
-			});
-
 			function saveToLocalStorage() {
 				const inputs = document.querySelectorAll('input[type="number"]');
 				inputs.forEach((input) => {
