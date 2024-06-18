@@ -317,42 +317,15 @@
 				</p>
 
 				<p class="komentarz" id="komentarzTekst"></p>
-				<button onclick="clearFormData()">Wyczyść dane</button
-				><span id="clearMessage"></span>
+				<button onclick="clearFormData()">Wyczyść dane</button>
 			</div>
 		</div>
 
 		<script>
-			function saveDostawyToLocalStorage() {
-				const inputs = document.querySelectorAll('input[type="number"]');
-				inputs.forEach((input) => {
-					localStorage.setItem(input.id, input.value);
-				});
-			}
-
-			function loadFromLocalStorage() {
-				const inputs = document.querySelectorAll('input[type="number"]');
-				inputs.forEach((input) => {
-					const storedValue = localStorage.getItem(input.id);
-					if (storedValue !== null) {
-						input.value = storedValue;
-					}
-				});
-			}
-
-			window.onload = function () {
-				loadFromLocalStorage();
-				addNextDostawa(1);
-			};
-
-			document.querySelectorAll('input[type="number"]').forEach((input) => {
-				input.addEventListener("input", saveDostawyToLocalStorage);
-			});
-
 			function saveToLocalStorage() {
 				const inputs = document.querySelectorAll('input[type="number"]');
 				inputs.forEach((input) => {
-					localStorage.setItem(input.id, input.value);
+					localStorage.setItem(`index_${input.id}`, input.value);
 				});
 
 				const dostawaValues = document.querySelectorAll(".dostawa-value");
@@ -364,7 +337,7 @@
 			function loadFromLocalStorage() {
 				const inputs = document.querySelectorAll('input[type="number"]');
 				inputs.forEach((input) => {
-					input.value = localStorage.getItem(input.id) || "";
+					input.value = localStorage.getItem(`index_${input.id}`) || "";
 				});
 
 				const dostawaValues = document.querySelectorAll(".dostawa-value");
@@ -378,31 +351,14 @@
 			}
 
 			function clearFormData() {
-				const inputs = document.querySelectorAll('input[type="number"]');
-				inputs.forEach((input) => {
-					localStorage.removeItem(input.id);
-				});
-
-				const dostawaValues = document.querySelectorAll(".dostawa-value");
-				dostawaValues.forEach((dostawa, index) => {
-					localStorage.removeItem(`dostawa${index + 1}`);
-				});
-
-				// Dodaj komunikat o udanym wyczyszczeniu danych
-				const messageContainer = document.getElementById("clearMessage");
-				if (messageContainer) {
-					messageContainer.textContent = "Dane zostały pomyślnie wyczyszczone.";
-				}
-
-				// Opcjonalnie, możesz odświeżyć stronę
-				// location.reload();
-
-				// Możesz również ukryć komunikat po kilku sekundach
-				setTimeout(() => {
-					if (messageContainer) {
-						messageContainer.textContent = "";
+				const localStorageKeys = Object.keys(localStorage);
+				localStorageKeys.forEach((key) => {
+					if (key.startsWith("index_") || key.startsWith("dostawa")) {
+						localStorage.removeItem(key);
 					}
-				}, 3000); // Komunikat zostanie ukryty po 3 sekundach (3000 milisekund)
+				});
+
+				location.reload();
 			}
 
 			function pokazKarty() {
@@ -520,6 +476,8 @@
 				let start = parseFloat(document.getElementById("start").value) || 0;
 				let koniec = utarg + start - ko_karty_online - wydatki;
 				document.getElementById("koniec").innerText = koniec.toFixed(2);
+
+				// Ustalenie komentarza na podstawie wyniku
 				const komentarze = [
 					"Za mało na komentarz. Ćwicz dalej!",
 					"Trochę lepiej, ale możesz więcej!",
@@ -582,6 +540,7 @@
 
 			window.onload = function () {
 				loadFromLocalStorage();
+				addNextDostawa(1);
 			};
 
 			function addDostawaInput(index) {
@@ -590,16 +549,16 @@
 				const dostawaInput = document.createElement("div");
 
 				dostawaInput.innerHTML = `
-        <label for="dostawa${index}">Dostawa ${index}:</label>
-        <input type="number" id="dostawa${index}" class="dostawa-value" oninput="addNextDostawa(${
+				<label for="dostawa${index}">Dostawa ${index}:</label>
+				<input type="number" id="dostawa${index}" class="dostawa-value" oninput="addNextDostawa(${
 					index + 1
 				})" value="${localStorage.getItem(`dostawa${index}`) || ""}" />
-        <select id="platnosc${index}" class="dostawa-platnosc">
-            <option value="online">Online</option>
-            <option value="karta">Kartą</option>
-            <option value="gotowka">Gotówką</option>
-        </select>
-    `;
+				<select id="platnosc${index}" class="dostawa-platnosc">
+					<option value="online">Online</option>
+					<option value="karta">Kartą</option>
+					<option value="gotowka">Gotówką</option>
+				</select>
+			`;
 
 				dostawyInputsContainer.appendChild(dostawaInput);
 				checkNegativeValues();
@@ -623,10 +582,6 @@
 					toggleButton.innerText = "Dodaj dostawę";
 				}
 			}
-			window.onload = function () {
-				loadFromLocalStorage();
-				addNextDostawa(1);
-			};
 
 			function addNextDostawa(index) {
 				const lastDostawaInput = document.querySelector(
@@ -656,6 +611,7 @@
 			}
 
 			addDostawaInput(1);
+
 			function checkNegativeValues() {
 				const elements = document.querySelectorAll(".negative-check");
 				elements.forEach((element) => {
