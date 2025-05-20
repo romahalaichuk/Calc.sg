@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Kalkulator Imprez</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				padding: 20px;
+				background-color: #f0f2f5;
+			}
+			h2 {
+				background-color: #4a90e2;
+				color: white;
+				padding: 10px;
+				border-radius: 10px;
+			}
+			.section {
+				background-color: white;
+				padding: 15px;
+				margin-bottom: 20px;
+				border-radius: 10px;
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			}
+			.row {
+				display: flex;
+				gap: 10px;
+				margin-bottom: 10px;
+				flex-wrap: wrap;
+			}
+			label {
+				font-weight: bold;
+			}
+			input,
+			select,
+			button {
+				padding: 8px;
+				border-radius: 5px;
+				border: 1px solid #ccc;
+			}
+			button {
+				background-color: #4a90e2;
+				color: white;
+				border: none;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+			}
+			button:hover {
+				background-color: #357abd;
+			}
+			.results {
+				font-size: 18px;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Kalkulator Imprez</h2>
+
+		<div class="section">
+			<h3>Uczestnicy</h3>
+			<div id="people-list">
+				<div class="row person-entry">
+					<div>
+						<label>Ile osób</label><br />
+						<input type="number" class="count" min="1" />
+					</div>
+					<div>
+						<label>Ile z osoby</label><br />
+						<input type="number" class="amount" min="0" />
+					</div>
+				</div>
+			</div>
+			<button onclick="addPerson()">Dodaj innych osób</button>
+		</div>
+
+		<div class="section">
+			<h3>Dodatkowe kwoty</h3>
+			<div id="extras-list">
+				<div class="row extra-entry">
+					<div>
+						<label>Nazwa</label><br />
+						<input type="text" class="extra-name" />
+					</div>
+					<div>
+						<label>Kwota</label><br />
+						<input type="number" class="extra-value" min="0" />
+					</div>
+					<div>
+						<label>Serwis</label><br />
+						<select class="extra-service">
+							<option>Doliczane do serwisu</option>
+							<option>Nie doliczamy do serwisu</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<button onclick="addExtra()">Dodaj dodatkową kwotę</button>
+		</div>
+
+		<div class="section">
+			<h3>Zaliczka</h3>
+			<div class="row">
+				<div>
+					<label>Kwota</label><br />
+					<input type="number" id="advance" min="0" />
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<h3>Serwis</h3>
+			<div class="row">
+				<div>
+					<label>Procent</label><br />
+					<input type="number" id="service-percent" value="10" min="0" />
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<button onclick="calculate()">Oblicz</button>
+		</div>
+
+		<div class="section results" id="results" style="display: none">
+			<p id="total"></p>
+			<p id="with-advance"></p>
+			<p id="service-amount"></p>
+		</div>
+
+		<script>
+			function addPerson() {
+				const container = document.getElementById("people-list");
+				const div = document.createElement("div");
+				div.className = "row person-entry";
+				div.innerHTML = `
+        <div>
+          <label>Ile osób</label><br>
+          <input type="number" class="count" min="1" />
+        </div>
+        <div>
+          <label>Ile z osoby</label><br>
+          <input type="number" class="amount" min="0" />
+        </div>`;
+				container.appendChild(div);
+			}
+
+			function addExtra() {
+				const container = document.getElementById("extras-list");
+				const div = document.createElement("div");
+				div.className = "row extra-entry";
+				div.innerHTML = `
+        <div>
+          <label>Nazwa</label><br>
+          <input type="text" class="extra-name" />
+        </div>
+        <div>
+          <label>Kwota</label><br>
+          <input type="number" class="extra-value" min="0" />
+        </div>
+        <div>
+          <label>Serwis</label><br>
+          <select class="extra-service">
+            <option>Doliczane do serwisu</option>
+            <option>Nie doliczamy do serwisu</option>
+          </select>
+        </div>`;
+				container.appendChild(div);
+			}
+
+			function calculate() {
+				let totalPeopleCost = 0;
+				document.querySelectorAll(".person-entry").forEach((entry) => {
+					const count = Number(entry.querySelector(".count").value);
+					const amount = Number(entry.querySelector(".amount").value);
+					if (!isNaN(count) && !isNaN(amount)) {
+						totalPeopleCost += count * amount;
+					}
+				});
+
+				let extraTotal = 0;
+				let extraForService = 0;
+				document.querySelectorAll(".extra-entry").forEach((entry) => {
+					const value = Number(entry.querySelector(".extra-value").value);
+					const serviceOption = entry.querySelector(".extra-service").value;
+					if (!isNaN(value)) {
+						extraTotal += value;
+						if (serviceOption === "Doliczane do serwisu") {
+							extraForService += value;
+						}
+					}
+				});
+
+				const servicePercent = Number(
+					document.getElementById("service-percent").value
+				);
+				const serviceAmount =
+					((totalPeopleCost + extraForService) * servicePercent) / 100;
+
+				subtotal = totalPeopleCost + extraTotal + serviceAmount;
+
+				const advance = Number(document.getElementById("advance").value);
+				let totalWithService = subtotal;
+				if (!isNaN(advance)) {
+					totalWithService -= advance;
+				}
+
+				document.getElementById(
+					"total"
+				).textContent = `Łącznie za całą imprezkę: ${subtotal.toFixed(2)} zł`;
+
+				document.getElementById(
+					"with-advance"
+				).textContent = `Do zapłaty z zaliczką: ${totalWithService.toFixed(
+					2
+				)} zł`;
+				document.getElementById(
+					"service-amount"
+				).textContent = `Serwis: ${serviceAmount.toFixed(2)} zł`;
+
+				document.getElementById("results").style.display = "block";
+			}
+		</script>
+	</body>
+</html>
