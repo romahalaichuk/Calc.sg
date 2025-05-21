@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Godziny Pracy</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				margin: 0;
+				padding: 0;
+				display: flex;
+			}
+			.sidebar {
+				width: 250px;
+				background: #f4f4f4;
+				padding: 20px;
+				box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+				height: 100vh;
+			}
+			.main {
+				flex: 1;
+				padding: 20px;
+				position: relative;
+			}
+			.topbar {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+			}
+			button {
+				margin: 5px 0;
+				padding: 10px;
+				background: #007bff;
+				color: white;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			button:hover {
+				background: #0056b3;
+			}
+			.hidden {
+				display: none;
+			}
+			.modal {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.modal-content {
+				background: white;
+				padding: 20px;
+				border-radius: 10px;
+				width: 400px;
+				max-height: 90vh;
+				overflow-y: auto;
+			}
+			.worker {
+				border: 1px solid #ccc;
+				padding: 10px;
+				margin-bottom: 10px;
+				border-radius: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="sidebar">
+			<button onclick="showWorkerList()">Kto jest w pracy</button>
+			<button onclick="showHistory()">Zobacz godziny</button>
+		</div>
+		<div class="main">
+			<div class="topbar">
+				<button onclick="toggleModal()">Dodaj nowego pracownika</button>
+			</div>
+			<h2>Dzisiejsi w pracy</h2>
+			<div id="currentWorkers"></div>
+			<button onclick="closeShift()">Zamknij zmianę pracowników</button>
+			<div id="closedShifts"></div>
+		</div>
+
+		<div id="modal" class="modal hidden">
+			<div class="modal-content">
+				<h3>Lista pracowników</h3>
+				<div id="workerList"></div>
+				<hr />
+				<h3>Dodaj pracownika</h3>
+				<input type="text" id="newName" placeholder="Imię" /><br /><br />
+				<input
+					type="number"
+					id="newRate"
+					placeholder="Stawka za godzinę" /><br /><br />
+				<button onclick="addWorker()">Zapisz</button>
+				<button onclick="toggleModal()">Zamknij</button>
+			</div>
+		</div>
+
+		<script>
+			let currentSession = [];
+			let closedWorkers = [];
+			let allShifts = JSON.parse(localStorage.getItem("allShifts")) || [];
+			let workers = JSON.parse(localStorage.getItem("workers")) || [];
+
+			window.onload = () => {
+				const modal = document.getElementById("modal");
+				modal.classList.add("hidden");
+				modal.style.display = "none"; // Dodatkowe zabezpieczenie
+			};
+
+			function saveWorkers() {
+				localStorage.setItem("workers", JSON.stringify(workers));
+			}
+
+			function toggleModal() {
+				const modal = document.getElementById("modal");
+				const isHidden = modal.classList.contains("hidden");
+
+				if (isHidden) {
+					updateWorkerList();
+					modal.classList.remove("hidden");
+					modal.style.display = "flex";
+				} else {
+					modal.classList.add("hidden");
+					modal.style.display = "none";
+				}
+			}
+
+			function updateWorkerList() {
+				const list = document.getElementById("workerList");
+				list.innerHTML = "";
+
+				workers.forEach((worker, i) => {
+					const div = document.createElement("div");
+					div.innerHTML = `${worker.name} (${worker.rate} zł/h) <button onclick="deleteWorker(${i})">Usuń z listy</button>`;
+					list.appendChild(div);
+				});
+			}
+
+			function deleteWorker(index) {
+				workers.splice(index, 1);
+				saveWorkers();
+				updateWorkerList();
+			}
+
+			function addWorker() {
+				const name = document.getElementById("newName").value;
+				const rate = Number(document.getElementById("newRate").value);
+				if (!name || !rate) return;
+
+				workers.push({ name, rate });
+				saveWorkers();
+
+				document.getElementById("newName").value = "";
+				document.getElementById("newRate").value = "";
+				toggleModal();
+			}
+
+			function showWorkerList() {
+				const container = document.getElementById("currentWorkers");
+				container.innerHTML = "";
+
+				workers.forEach((worker) => {
+					const btn = document.createElement("button");
+					btn.textContent = worker.name;
+					btn.onclick = () => startShift(worker);
+					container.appendChild(btn);
+				});
+			}
+
+			function startShift(worker) {
+				const now = new Date();
+				worker.start = now.toISOString();
+				currentSession.push(worker);
+				renderCurrentWorkers();
+			}
+
+			function renderCurrentWorkers() {
+				const container = document.getElementById("currentWorkers");
+				container.innerHTML = "";
+				currentSession.forEach((w, index) => {
+					const div = document.createElement("div");
+					div.className = "worker";
+					div.innerHTML = `<b>${w.name}</b><br> <button onclick="endShift(${index})">Zakończ pracę</button>`;
+					container.appendChild(div);
+				});
+			}
+
+			function endShift(index) {
+				const now = new Date();
+				const w = currentSession[index];
+				const start = new Date(w.start);
+				const diffMs = now - start;
+				const diffMin = Math.round(diffMs / 60000);
+				const hours = Math.floor(diffMin / 60);
+				const mins = diffMin % 60;
+				let finalHours = hours;
+				if (mins >= 15 && mins < 45) finalHours += 0.5;
+				else if (mins >= 45) finalHours += 1;
+				const pay = finalHours * w.rate;
+
+				const finished = {
+					name: w.name,
+					start: w.start,
+					end: now.toISOString(),
+					duration: `${hours}h ${mins}m`,
+					pay,
+					rate: w.rate,
+					finalHours,
+				};
+
+				const container = document.getElementById("closedShifts");
+				const div = document.createElement("div");
+				div.className = "worker";
+				div.innerHTML = `<b>${finished.name}</b><br>${
+					finished.duration
+				} → ${pay.toFixed(2)} zł<br>(${new Date(
+					finished.start
+				).toLocaleTimeString()} - ${new Date(
+					finished.end
+				).toLocaleTimeString()})`;
+				container.appendChild(div);
+
+				currentSession.splice(index, 1);
+				renderCurrentWorkers();
+				closedWorkers.push(finished);
+			}
+
+			function closeShift() {
+				const date = new Date().toLocaleDateString();
+				const day = { date, workers: closedWorkers };
+				allShifts.push(day);
+				localStorage.setItem("allShifts", JSON.stringify(allShifts));
+				closedWorkers = [];
+				document.getElementById("closedShifts").innerHTML = "";
+				alert("Zmiana zapisana.");
+			}
+
+			function showHistory() {
+				let win = window.open("", "_blank");
+				win.document.write("<h2>Historia Pracowników</h2>");
+				const totals = {};
+
+				allShifts.forEach((day, i) => {
+					win.document.write(
+						`<h3>${day.date} <button onclick='window.close()'>Zamknij</button> <button onclick='deleteDay(${i})'>Usuń tydzień</button></h3>`
+					);
+					day.workers.forEach((w) => {
+						win.document.write(
+							`<div><b>${w.name}</b>: ${w.finalHours}h → ${w.pay.toFixed(
+								2
+							)} zł (${new Date(w.start).toLocaleTimeString()} - ${new Date(
+								w.end
+							).toLocaleTimeString()})</div>`
+						);
+						if (!totals[w.name]) {
+							totals[w.name] = { hours: 0, pay: 0 };
+						}
+						totals[w.name].hours += w.finalHours;
+						totals[w.name].pay += w.pay;
+					});
+				});
+
+				win.document.write("<hr><h2>Podsumowanie</h2>");
+				for (const [name, data] of Object.entries(totals)) {
+					win.document.write(
+						`<div><b>${name}</b>: ${data.hours}h → ${data.pay.toFixed(
+							2
+						)} zł</div>`
+					);
+				}
+
+				win.document.write(
+					"<script>function deleteDay(i){ let data = JSON.parse(localStorage.getItem('allShifts')); data.splice(i,1); localStorage.setItem('allShifts', JSON.stringify(data)); window.location.reload(); }<\/script>"
+				);
+			}
+		</script>
+	</body>
+</html>
