@@ -127,6 +127,7 @@
 			<p id="total"></p>
 			<p id="with-advance"></p>
 			<p id="service-amount"></p>
+			<p id="net-revenue"></p>
 		</div>
 
 		<script>
@@ -218,6 +219,10 @@
 				document.getElementById(
 					"service-amount"
 				).textContent = `Serwis: ${serviceAmount.toFixed(2)} zł`;
+				const netRevenue = subtotal - serviceAmount;
+				document.getElementById(
+					"net-revenue"
+				).textContent = `Do utargu bez serwisu: ${netRevenue.toFixed(2)} zł`;
 
 				document.getElementById("results").style.display = "block";
 			}
