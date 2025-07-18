@@ -105,7 +105,7 @@
 
 			p {
 				font-size: 20px;
-				background-color: #ffc0cb;
+				background-color: #eb9fac;
 				font-weight: bold;
 				margin-top: 10px;
 			}
@@ -134,6 +134,114 @@
 				color: red;
 				font-weight: bold;
 				animation: pulse 1s infinite alternate;
+			}
+
+			.input-row-flame {
+				--gold: #ffd700;
+				--fire: #ff5722;
+
+				display: flex;
+				flex-direction: column;
+				margin-bottom: 16px;
+				max-width: 340px;
+				background: linear-gradient(135deg, #1a1a1a 0%, #111 100%);
+				border: 1.5px solid var(--gold);
+				border-radius: 18px;
+				padding: 14px 20px;
+				box-shadow: 0 0 10px var(--gold), 0 0 20px rgba(255, 215, 0, 0.4),
+					inset 0 0 8px rgba(255, 215, 0, 0.2);
+				transition: all 0.4s ease;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.input-row-flame::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background: conic-gradient(
+					from 0deg,
+					transparent,
+					var(--fire),
+					transparent
+				);
+				animation: spin 4s linear infinite;
+				opacity: 0;
+				transition: opacity 0.4s;
+				z-index: 0;
+			}
+			.input-row-flame:hover::before {
+				opacity: 0.35;
+			}
+			h3 {
+				margin-top: 40px;
+				margin-bottom: 20px;
+				font-size: 28px;
+				font-weight: 700;
+				color: #333;
+				text-align: center;
+				letter-spacing: 1px;
+				text-transform: uppercase;
+				border-bottom: 2px solid #ccc;
+				padding-bottom: 8px;
+				max-width: 400px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			@keyframes spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+
+			.input-row-flame > * {
+				position: relative;
+				z-index: 1;
+			}
+
+			.label-flame {
+				font-size: 17px;
+				font-weight: 700;
+				color: var(--gold);
+				margin-bottom: 6px;
+				text-shadow: 0 0 6px var(--fire), 0 0 12px var(--gold);
+				letter-spacing: 0.5px;
+			}
+
+			.input-flame {
+				background: #000;
+				color: var(--gold);
+				border: 1px solid var(--gold);
+				border-radius: 12px;
+				padding: 10px 14px;
+				font-size: 18px;
+				font-weight: 600;
+				outline: none;
+				transition: all 0.3s ease;
+			}
+			.input-flame:focus {
+				border-color: var(--fire);
+				box-shadow: 0 0 10px var(--fire);
+			}
+			@keyframes spark {
+				0% {
+					transform: translate(0, 0) scale(1);
+					opacity: 1;
+				}
+				100% {
+					transform: translate(var(--dx), var(--dy)) scale(0);
+					opacity: 0;
+				}
+			}
+
+			.spark {
+				position: absolute;
+				pointer-events: none;
+				font-size: 22px;
+				font-weight: bold;
+				color: #ffd700;
+				text-shadow: 0 0 6px #ff5722, 0 0 12px #ffd700;
+				animation: spark 1.2s ease-out forwards;
 			}
 		</style>
 	</head>
@@ -167,42 +275,102 @@
 				</button>
 				<div id="dostawy-inputs"></div>
 
-				<label for="bolt">Bolt:</label>
-				<input type="number" id="bolt" required /><br />
+				<!-- 🔥 Wszystkie pola w wersji flame -->
+				<div class="input-row-flame">
+					<div class="input-row-flame">
+						<label for="wolt_cdp" class="label-flame"
+							>Wolt Cassa di Pizza:</label
+						>
+						<input type="number" id="wolt_cdp" class="input-flame" />
+					</div>
 
-				<label for="wolt">Wolt (opcjonalnie):</label>
-				<input type="number" id="wolt" /><br />
-				<label for="uber">Uber (opcjonalnie):</label>
-				<input type="number" id="uber" />
-				<label for="sala">Sala:</label>
-				<input type="number" id="sala" required /><br />
+					<div class="input-row-flame">
+						<label for="bolt_cdp" class="label-flame"
+							>Bolt Cassa di Pizza:</label
+						>
+						<input type="number" id="bolt_cdp" class="input-flame" required />
+					</div>
+					<div class="input-row-flame">
+						<label for="uber_cdp" class="label-flame"
+							>Uber Cassa di Pizza:</label
+						>
+						<input type="number" id="uber_cdp" class="input-flame" />
+					</div>
+					<div class="input-row-flame">
+						<label for="pyszne_cdp" class="label-flame"
+							>Pyszne Cassa di Pizza:</label
+						>
+						<input type="number" id="pyszne_cdp" class="input-flame" />
+					</div>
+				</div>
+				<div class="input-row-flame">
+					<div class="input-row-flame">
+						<label for="bolt_lm" class="label-flame">Bolt Los Mexicos:</label>
+						<input type="number" id="bolt_lm" class="input-flame" />
+					</div>
 
-				<label for="start">Start:</label>
-				<input type="number" id="start" required /><br />
+					<div class="input-row-flame">
+						<label for="uber_lm" class="label-flame">Uber Los Mexicos:</label>
+						<input type="number" id="uber_lm" class="input-flame" />
+					</div>
 
-				<label for="karta_raz">Zamknięcia karty pierwszej:</label>
-				<input
-					type="number"
-					id="karta_raz"
-					required
-					oninput="pokazKarty()" /><br />
+					<div class="input-row-flame">
+						<label for="pyszne_lm" class="label-flame"
+							>Pyszne Los Mexicos:</label
+						>
+						<input type="number" id="pyszne_lm" class="input-flame" />
+					</div>
+				</div>
+				<div class="input-row-flame">
+					<label for="sala" class="label-flame">Sala:</label>
+					<input type="number" id="sala" class="input-flame" required />
+				</div>
+
+				<div class="input-row-flame">
+					<label for="start" class="label-flame">Start:</label>
+					<input type="number" id="start" class="input-flame" required />
+				</div>
+
+				<div class="input-row-flame">
+					<label for="karta_raz" class="label-flame"
+						>Zamknięcia karty pierwszej:</label
+					>
+					<input
+						type="number"
+						id="karta_raz"
+						class="input-flame"
+						required
+						oninput="pokazKarty()" />
+				</div>
 
 				<div class="karta-container" id="karta_drugie_container">
-					<label for="karta_drugie"
-						>Zamknięcia karty drugiej (opcjonalnie):</label
-					>
-					<input type="number" id="karta_drugie" oninput="pokazKarty()" /><br />
+					<div class="input-row-flame">
+						<label for="karta_drugie" class="label-flame"
+							>Zamknięcia karty drugiej (opcjonalnie):</label
+						>
+						<input
+							type="number"
+							id="karta_drugie"
+							class="input-flame"
+							oninput="pokazKarty()" />
+					</div>
 				</div>
 
 				<div class="karta-container" id="karta_trzecie_container">
-					<label for="karta_trzecie"
-						>Zamknięcia karty trzeciej (opcjonalnie):</label
-					>
-					<input type="number" id="karta_trzecie" /><br />
+					<div class="input-row-flame">
+						<label for="karta_trzecie" class="label-flame"
+							>Zamknięcia karty trzeciej (opcjonalnie):</label
+						>
+						<input type="number" id="karta_trzecie" class="input-flame" />
+					</div>
 				</div>
 
-				<label for="wczoraj_zostalo_sera">Wczoraj zostało sera:</label>
-				<input type="number" id="wczoraj_zostalo_sera" /><br />
+				<div class="input-row-flame">
+					<label for="wczoraj_zostalo_sera" class="label-flame"
+						>Wczoraj zostało sera:</label
+					>
+					<input type="number" id="wczoraj_zostalo_sera" class="input-flame" />
+				</div>
 
 				<h2>Wydatki</h2>
 				<div id="wydatki-container">
@@ -325,7 +493,9 @@
 					Sera miało zostać:
 					<span id="sera_mialo_zostac" class="negative-check">0.00</span>
 				</p>
-
+				<h3>Rozliczenie lokali</h3>
+				<p>Cassa di Pizza: <span id="cassa_di_pizza">0.00</span></p>
+				<p>Los Mexicos: <span id="los_mexicos">0.00</span></p>
 				<p class="komentarz" id="komentarzTekst"></p>
 				<button onclick="clearFormData()">Wyczyść dane</button>
 			</div>
@@ -414,13 +584,68 @@
 					}
 				}
 			}
+			document.querySelectorAll(".input-flame").forEach((input) => {
+				input.addEventListener("input", (e) => {
+					const val = e.target.value;
+					if (!val) return;
 
+					const lastChar = val.slice(-1);
+					if (!/[0-9]/.test(lastChar)) return;
+
+					const parent = input.parentElement;
+					parent.style.position = "relative";
+
+					/* oblicz pozycję kursora względem parenta */
+					const rect = input.getBoundingClientRect();
+					const parentRect = parent.getBoundingClientRect();
+					const x = e.clientX - parentRect.left;
+					const y = e.clientY - parentRect.top;
+
+					for (let i = 0; i < 20; i++) {
+						const spark = document.createElement("span");
+						spark.textContent = lastChar;
+						spark.className = "spark";
+
+						/* kierunek i odległość 50-250 px */
+						const angle = Math.random() * 2 * Math.PI;
+						const distance = 50 + Math.random() * 200;
+						const dx = Math.cos(angle) * distance;
+						const dy = Math.sin(angle) * distance;
+
+						spark.style.setProperty("--dx", dx + "px");
+						spark.style.setProperty("--dy", dy + "px");
+
+						spark.style.left = x + "px";
+						spark.style.top = y + "px";
+
+						parent.appendChild(spark);
+						spark.addEventListener("animationend", () => spark.remove());
+					}
+				});
+			});
 			function oblicz() {
 				let sala = parseFloat(document.getElementById("sala").value) || 0;
-				let bolt = parseFloat(document.getElementById("bolt").value) || 0;
-				let wolt = parseFloat(document.getElementById("wolt").value) || 0;
-				let uber = parseFloat(document.getElementById("uber").value) || 0;
 
+				// Nowe inputy
+				let wolt_cdp =
+					parseFloat(document.getElementById("wolt_cdp").value) || 0;
+				let bolt_cdp =
+					parseFloat(document.getElementById("bolt_cdp").value) || 0;
+				let bolt_lm = parseFloat(document.getElementById("bolt_lm").value) || 0;
+				let uber_cdp =
+					parseFloat(document.getElementById("uber_cdp").value) || 0;
+				let uber_lm = parseFloat(document.getElementById("uber_lm").value) || 0;
+				let pyszne_cdp =
+					parseFloat(document.getElementById("pyszne_cdp").value) || 0;
+				let pyszne_lm =
+					parseFloat(document.getElementById("pyszne_lm").value) || 0;
+
+				// Suma platform
+				let bolt = bolt_cdp + bolt_lm;
+				let uber = uber_cdp + uber_lm;
+				let wolt = wolt_cdp + pyszne_cdp + pyszne_lm;
+
+				// Dostawy SG
 				let dostawyInputs = document.querySelectorAll(".dostawa-value");
 				let dostawySum = 0;
 				let onlineSGSum = 0;
@@ -434,15 +659,20 @@
 					}
 				});
 
-				let utarg = sala + dostawySum + wolt + uber + bolt;
+				// Utarg całkowity
+				let utarg = sala + dostawySum + bolt + uber + wolt;
 				document.getElementById("utarg").innerText = utarg.toFixed(2);
 
+				// Online SG
 				document.getElementById("online_sg_wynik").innerText =
 					onlineSGSum.toFixed(2);
-				let onlineSum = bolt + wolt + uber + onlineSGSum;
+
+				// Online (Bolt + Uber + Wolt + SG online)
+				let onlineSum = bolt + uber + wolt + onlineSGSum;
 				document.getElementById("online_wynik").innerText =
 					onlineSum.toFixed(2);
 
+				// Karty
 				let karta_raz =
 					parseFloat(document.getElementById("karta_raz").value) || 0;
 				let karta_drugie =
@@ -455,6 +685,7 @@
 				document.getElementById("ko_karty_online").innerText =
 					ko_karty_online.toFixed(2);
 
+				// Wydatki
 				let wydatkiElements = document.querySelectorAll(".wyplaty");
 				let wydatki = 0;
 				wydatkiElements.forEach((element) => {
@@ -462,11 +693,10 @@
 				});
 				document.getElementById("wydatki").innerText = wydatki.toFixed(2);
 
+				// Ser
 				let wczoraj_zostalo_sera =
 					parseFloat(document.getElementById("wczoraj_zostalo_sera").value) ||
 					0;
-
-				// Obliczenie ilości sera do zużycia
 				let sera_milosci_zuzyj = Math.floor(utarg / 500) * 0.5;
 				document.getElementById("ser_milosci_zuzyj").innerText =
 					sera_milosci_zuzyj.toFixed(2);
@@ -475,19 +705,20 @@
 				document.getElementById("sera_mialo_zostac").innerText =
 					sera_mialo_zostac.toFixed(2);
 
+				// Dostawy (SG + Bolt + Uber + Wolt)
 				let dostawyTotal = dostawySum;
 				document.getElementById("dostawy_sg_wynik").innerText =
 					dostawyTotal.toFixed(2);
 
-				let dostawyWoltBoltUber = dostawySum + wolt + uber + bolt;
+				let dostawyWoltBoltUber = dostawySum + bolt + uber + wolt;
 				document.getElementById("wynik_dostawy").innerText =
 					dostawyWoltBoltUber.toFixed(2);
 
+				// Stan kasy
 				let start = parseFloat(document.getElementById("start").value) || 0;
 				let koniec = utarg + start - ko_karty_online - wydatki;
 				document.getElementById("koniec").innerText = koniec.toFixed(2);
 
-				// Ustalenie komentarza na podstawie wyniku
 				const komentarze = [
 					"Za mało na komentarz. Ćwicz dalej!",
 					"Trochę lepiej, ale możesz więcej!",
@@ -544,7 +775,14 @@
 				} else if (utarg >= 9500 && utarg < 10000) {
 					komentarzTekst.textContent = komentarze[16];
 				}
+				// Obliczenie przychodów dla lokali
+				let cassa_di_pizza = bolt_cdp + uber_cdp + wolt_cdp + pyszne_cdp;
+				let los_mexicos = bolt_lm + uber_lm + pyszne_lm;
 
+				document.getElementById("cassa_di_pizza").innerText =
+					cassa_di_pizza.toFixed(2);
+				document.getElementById("los_mexicos").innerText =
+					los_mexicos.toFixed(2);
 				saveToLocalStorage();
 			}
 
