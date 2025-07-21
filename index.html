@@ -479,20 +479,28 @@
 				</p>
 				<p>KO Karty i Online: <span id="ko_karty_online">0.00</span></p>
 
-				<p>Wydatki: <span id="wydatki" class="negative-check">0.00</span></p>
 				<p>
 					Dostawy (SG+Wolt+Bolt+Uber):
 					<span id="wynik_dostawy" class="negative-check">0.00</span>
 				</p>
-
+				<!-- 🔥 NOWE wyniki -->
 				<p>
-					Ser miłeś zużyj:
+					Uber (Cassa di Pizza + Los Mexicos):
+					<span id="uber_total" class="negative-check">0.00</span>
+				</p>
+				<p>
+					Bolt (Cassa di Pizza + Los Mexicos):
+					<span id="bolt_total" class="negative-check">0.00</span>
+				</p>
+				<p>
+					Ser miałeś zużyć:
 					<span id="ser_milosci_zuzyj" class="negative-check">0.00</span>
 				</p>
 				<p>
 					Sera miało zostać:
 					<span id="sera_mialo_zostac" class="negative-check">0.00</span>
 				</p>
+				<p>Wydatki: <span id="wydatki" class="negative-check">0.00</span></p>
 				<h3>Rozliczenie lokali</h3>
 				<p>Cassa di Pizza: <span id="cassa_di_pizza">0.00</span></p>
 				<p>Los Mexicos: <span id="los_mexicos">0.00</span></p>
@@ -775,6 +783,12 @@
 				} else if (utarg >= 9500 && utarg < 10000) {
 					komentarzTekst.textContent = komentarze[16];
 				}
+				// 🔥 NOWE – sumowanie Uber i Bolt osobno
+				let uber_total = uber_cdp + uber_lm;
+				let bolt_total = bolt_cdp + bolt_lm;
+
+				document.getElementById("uber_total").innerText = uber_total.toFixed(2);
+				document.getElementById("bolt_total").innerText = bolt_total.toFixed(2);
 				// Obliczenie przychodów dla lokali
 				let cassa_di_pizza = bolt_cdp + uber_cdp + wolt_cdp + pyszne_cdp;
 				let los_mexicos = bolt_lm + uber_lm + pyszne_lm;
