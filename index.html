@@ -506,10 +506,72 @@
 				<p>Los Mexicos: <span id="los_mexicos">0.00</span></p>
 				<p class="komentarz" id="komentarzTekst"></p>
 				<button onclick="clearFormData()">Wyczyść dane</button>
+				<!-- <button onclick="generujSzkicA4()">🖨️ Generuj szkic A4</button> -->
 			</div>
 		</div>
 
 		<script>
+			// function generujSzkicA4() {
+			// 	// pobranie wszystkich wartości
+			// 	const sala = parseFloat(document.getElementById("sala").value) || 0;
+			// 	const wolt_cdp =
+			// 		parseFloat(document.getElementById("wolt_cdp").value) || 0;
+			// 	const bolt_cdp =
+			// 		parseFloat(document.getElementById("bolt_cdp").value) || 0;
+			// 	const bolt_lm =
+			// 		parseFloat(document.getElementById("bolt_lm").value) || 0;
+			// 	const uber_cdp =
+			// 		parseFloat(document.getElementById("uber_cdp").value) || 0;
+			// 	const uber_lm =
+			// 		parseFloat(document.getElementById("uber_lm").value) || 0;
+			// 	const pyszne_cdp =
+			// 		parseFloat(document.getElementById("pyszne_cdp").value) || 0;
+			// 	const pyszne_lm =
+			// 		parseFloat(document.getElementById("pyszne_lm").value) || 0;
+
+			// 	const bolt = bolt_cdp + bolt_lm;
+			// 	const uber = uber_cdp + uber_lm;
+			// 	const wolt = wolt_cdp + pyszne_cdp + pyszne_lm;
+
+			// 	const dostawyInputs = document.querySelectorAll(".dostawa-value");
+			// 	let dostawySum = 0;
+			// 	dostawyInputs.forEach((i) => (dostawySum += parseFloat(i.value) || 0));
+
+			// 	const karta_raz =
+			// 		parseFloat(document.getElementById("karta_raz").value) || 0;
+			// 	const karta_drugie =
+			// 		parseFloat(document.getElementById("karta_drugie").value) || 0;
+			// 	const karta_trzecie =
+			// 		parseFloat(document.getElementById("karta_trzecie").value) || 0;
+
+			// 	let wydatki = 0;
+			// 	const wyplaty = Array.from(document.querySelectorAll(".wyplaty"))
+			// 		.map((inp, i) => {
+			// 			const val = parseFloat(inp.value) || 0;
+			// 			if (val) wydatki += val;
+			// 			return val ? `wyplata${i + 1}=${val}` : "";
+			// 		})
+			// 		.filter(Boolean);
+
+			// 	const start = parseFloat(document.getElementById("start").value) || 0;
+			// 	const wcz_ser =
+			// 		parseFloat(document.getElementById("wczoraj_zostalo_sera").value) ||
+			// 		0;
+
+			// 	// budujemy URL
+			// 	const url =
+			// 		`szkic.html?` +
+			// 		`sala=${sala}&` +
+			// 		`dostawySum=${dostawySum}&` +
+			// 		`bolt_cdp=${bolt_cdp}&bolt_lm=${bolt_lm}&` +
+			// 		`uber_cdp=${uber_cdp}&uber_lm=${uber_lm}&` +
+			// 		`wolt_cdp=${wolt_cdp}&pyszne_cdp=${pyszne_cdp}&pyszne_lm=${pyszne_lm}&` +
+			// 		`karta_raz=${karta_raz}&karta_drugie=${karta_drugie}&karta_trzecie=${karta_trzecie}&` +
+			// 		`wydatki=${wydatki}&start=${start}&wczoraj_zostalo_sera=${wcz_ser}&` +
+			// 		wyplaty.join("&");
+
+			// 	window.open(url, "_blank");
+			// }
 			function saveToLocalStorage() {
 				const inputs = document.querySelectorAll('input[type="number"]');
 				inputs.forEach((input) => {
@@ -668,7 +730,9 @@
 				});
 
 				// Utarg całkowity
-				let utarg = sala + dostawySum + bolt + uber + wolt;
+				// Utarg całkowity (bez Pyszne)
+				let utarg =
+					sala + dostawySum + bolt + uber + wolt - pyszne_cdp - pyszne_lm;
 				document.getElementById("utarg").innerText = utarg.toFixed(2);
 
 				// Online SG
@@ -797,7 +861,24 @@
 					cassa_di_pizza.toFixed(2);
 				document.getElementById("los_mexicos").innerText =
 					los_mexicos.toFixed(2);
-				saveToLocalStorage();
+				// const url =
+				// 	`szkic.html?` +
+				// 	`sala=${sala}&` +
+				// 	`dostawySum=${dostawySum}&` +
+				// 	`bolt_cdp=${bolt_cdp}&bolt_lm=${bolt_lm}&` +
+				// 	`uber_cdp=${uber_cdp}&uber_lm=${uber_lm}&` +
+				// 	`wolt_cdp=${wolt_cdp}&pyszne_cdp=${pyszne_cdp}&pyszne_lm=${pyszne_lm}&` +
+				// 	`karta_raz=${karta_raz}&karta_drugie=${karta_drugie}&karta_trzecie=${karta_trzecie}&` +
+				// 	`wydatki=${wydatki}&start=${start}&wczoraj_zostalo_sera=${wczoraj_zostalo_sera}&` +
+				// 	Array.from(document.querySelectorAll(".wyplaty"))
+				// 		.map((inp, i) =>
+				// 			inp.value.trim() ? `wyplata${i + 1}=${inp.value}` : ""
+				// 		)
+				// 		.filter(Boolean)
+				// 		.join("&");
+
+				// window.open(url, "_blank");
+				// saveToLocalStorage();
 			}
 
 			window.onload = function () {
