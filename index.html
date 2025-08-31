@@ -320,6 +320,10 @@
 						>
 						<input type="number" id="pyszne_lm" class="input-flame" />
 					</div>
+					<div class="input-row-flame">
+						<label for="wolt_lm" class="label-flame">Wolt Los Mexicos:</label>
+						<input type="number" id="wolt_lm" class="input-flame" />
+					</div>
 				</div>
 				<div class="input-row-flame">
 					<label for="sala" class="label-flame">Sala:</label>
@@ -493,6 +497,10 @@
 					<span id="bolt_total" class="negative-check">0.00</span>
 				</p>
 				<p>
+					Wolt (Cassa di Pizza + Los Mexicos):
+					<span id="wolt_total" class="negative-check">0.00</span>
+				</p>
+				<p>
 					Ser miałeś zużyć:
 					<span id="ser_milosci_zuzyj" class="negative-check">0.00</span>
 				</p>
@@ -573,68 +581,56 @@
 			// 	window.open(url, "_blank");
 			// }
 			function saveToLocalStorage() {
-				const inputs = document.querySelectorAll('input[type="number"]');
-				inputs.forEach((input) => {
+				document.querySelectorAll('input[type="number"]').forEach((input) => {
 					localStorage.setItem(`index_${input.id}`, input.value);
 				});
-
-				const dostawaValues = document.querySelectorAll(".dostawa-value");
-				dostawaValues.forEach((dostawa, index) => {
-					localStorage.setItem(`dostawa${index + 1}`, dostawa.value);
+				document.querySelectorAll(".dostawa-value").forEach((input, idx) => {
+					localStorage.setItem(`dostawa${idx + 1}`, input.value);
 				});
 			}
 
 			function loadFromLocalStorage() {
-				const inputs = document.querySelectorAll('input[type="number"]');
-				inputs.forEach((input) => {
+				document.querySelectorAll('input[type="number"]').forEach((input) => {
 					input.value = localStorage.getItem(`index_${input.id}`) || "";
 				});
-
-				const dostawaValues = document.querySelectorAll(".dostawa-value");
-				dostawaValues.forEach((dostawa, index) => {
-					dostawa.value = localStorage.getItem(`dostawa${index + 1}`) || "";
+				document.querySelectorAll(".dostawa-value").forEach((input, idx) => {
+					input.value = localStorage.getItem(`dostawa${idx + 1}`) || "";
 				});
-
-				pokazKarty();
-				pokazWyplaty();
-				oblicz();
 			}
 
+			function loadFromLocalStorage() {
+				document.querySelectorAll('input[type="number"]').forEach((input) => {
+					input.value = localStorage.getItem(`index_${input.id}`) || "";
+				});
+				document.querySelectorAll(".dostawa-value").forEach((input, idx) => {
+					input.value = localStorage.getItem(`dostawa${idx + 1}`) || "";
+				});
+			}
 			function clearFormData() {
-				const localStorageKeys = Object.keys(localStorage);
-				localStorageKeys.forEach((key) => {
+				const keys = Object.keys(localStorage);
+				keys.forEach((key) => {
 					if (key.startsWith("index_") || key.startsWith("dostawa")) {
 						localStorage.removeItem(key);
 					}
 				});
-
-				location.reload();
+				location.reload(); // przeładuj stronę – wszystko wróci do domyślnych
 			}
 
 			function pokazKarty() {
-				const karta_drugie = document.getElementById("karta_drugie_container");
-				const karta_trzecie = document.getElementById(
-					"karta_trzecie_container"
-				);
-
 				const karta_raz =
 					parseFloat(document.getElementById("karta_raz").value) || 0;
-				const karta_drugie_value =
+				const karta_drugie =
 					parseFloat(document.getElementById("karta_drugie").value) || 0;
 
-				if (karta_raz > 0) {
-					karta_drugie.style.display = "block";
-				} else {
-					karta_drugie.style.display = "none";
-					document.getElementById("karta_drugie").value = "";
-				}
+				document.getElementById("karta_drugie_container").style.display =
+					document.getElementById("karta_raz").value.trim() !== ""
+						? "block"
+						: "none";
 
-				if (karta_drugie_value > 0) {
-					karta_trzecie.style.display = "block";
-				} else {
-					karta_trzecie.style.display = "none";
-					document.getElementById("karta_trzecie").value = "";
-				}
+				document.getElementById("karta_trzecie_container").style.display =
+					document.getElementById("karta_drugie").value.trim() !== ""
+						? "block"
+						: "none";
 			}
 
 			function pokazWyplaty() {
@@ -699,6 +695,7 @@
 				// Nowe inputy
 				let wolt_cdp =
 					parseFloat(document.getElementById("wolt_cdp").value) || 0;
+				let wolt_lm = parseFloat(document.getElementById("wolt_lm").value) || 0;
 				let bolt_cdp =
 					parseFloat(document.getElementById("bolt_cdp").value) || 0;
 				let bolt_lm = parseFloat(document.getElementById("bolt_lm").value) || 0;
@@ -713,7 +710,7 @@
 				// Suma platform
 				let bolt = bolt_cdp + bolt_lm;
 				let uber = uber_cdp + uber_lm;
-				let wolt = wolt_cdp + pyszne_cdp + pyszne_lm;
+				let wolt = wolt_cdp + wolt_lm; // ← poprawione
 
 				// Dostawy SG
 				let dostawyInputs = document.querySelectorAll(".dostawa-value");
@@ -731,8 +728,7 @@
 
 				// Utarg całkowity
 				// Utarg całkowity (bez Pyszne)
-				let utarg =
-					sala + dostawySum + bolt + uber + wolt - pyszne_cdp - pyszne_lm;
+				let utarg = sala + dostawySum + bolt + uber + wolt;
 				document.getElementById("utarg").innerText = utarg.toFixed(2);
 
 				// Online SG
@@ -847,15 +843,16 @@
 				} else if (utarg >= 9500 && utarg < 10000) {
 					komentarzTekst.textContent = komentarze[16];
 				}
-				// 🔥 NOWE – sumowanie Uber i Bolt osobno
+				// 🔥 NOWE – sumowanie Uber i Bolt i wolt osobno
 				let uber_total = uber_cdp + uber_lm;
 				let bolt_total = bolt_cdp + bolt_lm;
-
+				let wolt_total = wolt_cdp + wolt_lm;
 				document.getElementById("uber_total").innerText = uber_total.toFixed(2);
 				document.getElementById("bolt_total").innerText = bolt_total.toFixed(2);
+				document.getElementById("wolt_total").innerText = wolt_total.toFixed(2);
 				// Obliczenie przychodów dla lokali
 				let cassa_di_pizza = bolt_cdp + uber_cdp + wolt_cdp + pyszne_cdp;
-				let los_mexicos = bolt_lm + uber_lm + pyszne_lm;
+				let los_mexicos = bolt_lm + uber_lm + pyszne_lm + wolt_lm;
 
 				document.getElementById("cassa_di_pizza").innerText =
 					cassa_di_pizza.toFixed(2);
@@ -880,11 +877,10 @@
 				// window.open(url, "_blank");
 				// saveToLocalStorage();
 			}
+			document
+				.querySelectorAll(".input-flame, .wyplaty, .dostawa-value")
+				.forEach((el) => el.addEventListener("input", oblicz));
 
-			window.onload = function () {
-				loadFromLocalStorage();
-				addNextDostawa(1);
-			};
 			function addDostawaInput(index) {
 				const dostawyInputsContainer =
 					document.getElementById("dostawy-inputs");
@@ -968,6 +964,24 @@
 			}
 
 			checkNegativeValues();
+			document.addEventListener("input", function (e) {
+				if (e.target.matches('input[type="number"]')) {
+					localStorage.setItem(`index_${e.target.id}`, e.target.value);
+				}
+				if (e.target.matches(".dostawa-value")) {
+					const index = Array.from(
+						document.querySelectorAll(".dostawa-value")
+					).indexOf(e.target);
+					localStorage.setItem(`dostawa${index + 1}`, e.target.value);
+				}
+			});
+			document.addEventListener("input", saveToLocalStorage);
+			window.onload = function () {
+				loadFromLocalStorage();
+				pokazKarty();
+				pokazWyplaty();
+				oblicz();
+			};
 		</script>
 	</body>
 </html>
